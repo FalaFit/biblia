@@ -88,6 +88,12 @@
             font-weight: 600;
         }
 
+        /* Correção para **1. **2. etc */
+        #respostaTexto strong:has(+ br) {
+            display: inline-block;
+            margin-top: 1rem;
+        }
+
         #respostaTexto ul, #respostaTexto ol {
             margin: 1.25rem 0;
             padding-left: 1.75rem;
@@ -106,22 +112,23 @@
         /* Referências bíblicas em destaque */
         .verse-ref {
             display: inline-block;
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.15) 0%, rgba(245, 158, 11, 0.15) 100%);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-weight: 600;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(245, 158, 11, 0.2) 100%);
+            border: 2px solid rgba(251, 191, 36, 0.5);
+            padding: 3px 10px;
+            border-radius: 8px;
+            font-weight: 700;
             color: #fbbf24;
             font-size: 0.95em;
-            transition: all 0.2s;
+            transition: all 0.3s;
             cursor: pointer;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.2);
         }
 
         .verse-ref:hover {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.25) 0%, rgba(245, 158, 11, 0.25) 100%);
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.35) 0%, rgba(245, 158, 11, 0.35) 100%);
             border-color: #fbbf24;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4);
         }
 
         .verse-ref-plain {
@@ -186,6 +193,7 @@
 </head>
 <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen">
     
+    <!-- [MANTÉM TODO O HTML IGUAL ATÉ O SCRIPT] -->
     <!-- ==================== TELA DE LOGIN ==================== -->
     <div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
@@ -680,29 +688,38 @@
                 }
 
                 const data = await response.json();
+                console.log('🔍 ===== DEBUG COMPLETO =====');
                 console.log('📦 Resposta completa:', data);
+                console.log('📊 Fontes:', data.fontes);
+                console.log('📝 Resposta texto:', data.resposta);
+                console.log('============================');
                 
                 let respostaTextoFinal = data.resposta || data.message?.content || '';
                 const fontes = data.fontes || [];
                 
-                console.log('📊 Total de fontes recebidas:', fontes.length);
+                console.log(`✅ Total de fontes recebidas: ${fontes.length}`);
                 
-                // 🔥 PROCESSAMENTO ANTES DO MARKDOWN!
-                // Substitui **(Referência - Tradução)** por spans clicáveis
+                // 🔥 SUBSTITUI ** ( ) ** POR HTML CLICÁVEL **ANTES** DO MARKDOWN
+                let countSubstituicoes = 0;
                 
                 respostaTextoFinal = respostaTextoFinal.replace(
                     /\*\*\(([^)]+)\)\*\*/g,
                     (match, ref) => {
-                        // Extrai informações da referência
+                        countSubstituicoes++;
+                        console.log(`🔍 [${countSubstituicoes}] Processando referência: "${ref}"`);
+                        
+                        // Regex para extrair: Livro Capítulo:Versículo - TRADUÇÃO
                         const refParts = ref.match(/^(.+?)\s+(\d+):(\d+(?:-\d+)?)\s*-\s*(NVI|ACF|AA)$/);
                         
                         if (!refParts) {
-                            console.warn('⚠️ Referência não reconhecida:', ref);
+                            console.warn(`⚠️ Referência não reconhecida: "${ref}"`);
                             return `<span class="verse-ref-plain">${ref}</span>`;
                         }
                         
                         const [_, livro, cap, vers, trad] = refParts;
                         const refCompleta = `${livro} ${cap}:${vers}`;
+                        
+                        console.log(`   📖 Buscando: ${refCompleta} (${trad})`);
                         
                         // Busca o versículo completo nas fontes
                         const fonte = fontes.find(f => 
@@ -710,15 +727,21 @@
                         );
                         
                         if (fonte && fonte.texto) {
-                            console.log('✅ Versículo encontrado:', refCompleta);
-                            const textoEscapado = fonte.texto.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                            console.log(`   ✅ ENCONTRADO! Texto: "${fonte.texto.substring(0, 50)}..."`);
+                            const textoEscapado = fonte.texto
+                                .replace(/"/g, '&quot;')
+                                .replace(/'/g, '&#39;')
+                                .replace(/\n/g, ' ');
+                            
                             return `<span class="verse-ref" data-ref="${refCompleta}" data-trad="${trad}" data-texto="${textoEscapado}">${ref}</span>`;
                         } else {
-                            console.warn('⚠️ Versículo não encontrado nas fontes:', refCompleta);
+                            console.warn(`   ⚠️ NÃO ENCONTRADO nas fontes`);
                             return `<span class="verse-ref-plain">${ref}</span>`;
                         }
                     }
                 );
+                
+                console.log(`🎯 Total de substituições realizadas: ${countSubstituicoes}`);
                 
                 // Agora converte o markdown para HTML
                 let htmlContent = marked.parse(respostaTextoFinal);
@@ -726,18 +749,23 @@
                 respostaTexto.innerHTML = htmlContent;
                 
                 // Adiciona evento de clique nas referências
-                respostaTexto.querySelectorAll('.verse-ref').forEach(ref => {
+                const verseRefs = respostaTexto.querySelectorAll('.verse-ref');
+                console.log(`🖱️ Total de elementos .verse-ref encontrados: ${verseRefs.length}`);
+                
+                verseRefs.forEach((ref, idx) => {
+                    console.log(`   [${idx+1}] Adicionando click em: ${ref.dataset.ref}`);
+                    
                     ref.addEventListener('click', () => {
                         const referencia = ref.dataset.ref;
                         const traducao = ref.dataset.trad;
                         const texto = ref.dataset.texto;
                         
-                        console.log('🖱️ Clique na referência:', referencia);
+                        console.log(`🖱️ CLIQUE! Abrindo modal para: ${referencia}`);
                         
                         if (referencia && texto) {
                             openVerseModal(referencia, traducao, texto);
                         } else {
-                            console.error('❌ Dados incompletos para abrir modal');
+                            console.error('❌ Dados incompletos:', {referencia, traducao, texto: texto?.substring(0, 30)});
                         }
                     });
                 });
@@ -764,7 +792,7 @@
                 }, 300);
                 
             } catch (err) {
-                console.error('❌ Erro:', err);
+                console.error('❌ ERRO:', err);
                 
                 loadingArea.classList.add('hidden');
                 errorArea.classList.remove('hidden');
