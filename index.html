@@ -88,12 +88,6 @@
             font-weight: 600;
         }
 
-        /* Correção para **1. **2. etc */
-        #respostaTexto strong:has(+ br) {
-            display: inline-block;
-            margin-top: 1rem;
-        }
-
         #respostaTexto ul, #respostaTexto ol {
             margin: 1.25rem 0;
             padding-left: 1.75rem;
@@ -156,7 +150,7 @@
             background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
             border: 2px solid rgba(251, 191, 36, 0.3);
             border-radius: 20px;
-            max-width: 700px;
+            max-width: 800px;
             width: 100%;
             max-height: 80vh;
             overflow-y: auto;
@@ -170,6 +164,28 @@
 
         .verse-modal.show .verse-modal-content {
             animation: slideUp 0.4s ease-out;
+        }
+
+        /* Destaque do versículo no modal */
+        .verse-highlight {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.25) 0%, rgba(245, 158, 11, 0.25) 100%);
+            border-left: 4px solid #fbbf24;
+            padding: 0.75rem 1.25rem;
+            display: block;
+            margin: 1rem 0;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            color: #fef3c7;
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
+        }
+
+        .verse-context {
+            line-height: 1.8;
+        }
+
+        .verse-text p {
+            margin-bottom: 1rem;
+            color: #e2e8f0;
         }
 
         /* Scrollbar customizada */
@@ -193,7 +209,6 @@
 </head>
 <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen">
     
-    <!-- [MANTÉM TODO O HTML IGUAL ATÉ O SCRIPT] -->
     <!-- ==================== TELA DE LOGIN ==================== -->
     <div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
@@ -449,7 +464,7 @@
                             <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                            Clique nas referências douradas para ver o versículo completo
+                            Clique nas referências douradas para ver o versículo em contexto
                         </span>
                         <span id="respostaTimestamp"></span>
                     </div>
@@ -605,12 +620,85 @@
         });
 
         // ==========================================
-        // MODAL DE VERSÍCULO
+        // MODAL DE VERSÍCULO COM CONTEXTO
         // ==========================================
         function openVerseModal(referencia, traducao, texto) {
+            console.log('📖 Abrindo modal:', referencia);
+            
             verseModalTitle.textContent = referencia;
-            verseModalSubtitle.textContent = traducao;
-            verseModalContent.innerHTML = `<blockquote class="border-l-4 border-amber-500 pl-6 italic text-amber-100">"${texto}"</blockquote>`;
+            verseModalSubtitle.textContent = `${traducao} • Versículo em contexto`;
+            
+            // Extrai o número do versículo da referência (ex: "Gênesis 37:28" → "28")
+            const verseMatch = referencia.match(/:(\d+)/);
+            const verseNumber = verseMatch ? verseMatch[1] : null;
+            
+            console.log('🔍 Versículo a destacar:', verseNumber);
+            
+            let textoProcessado = texto;
+            
+            if (verseNumber) {
+                // Tenta identificar e destacar o versículo específico no texto
+                // Patterns mais flexíveis para diferentes formatos
+                const patterns = [
+                    // Pattern 1: "28 Texto..." ou "28. Texto..."
+                    new RegExp(`(^|\\s)(${verseNumber}[\\s.]+[^\\n]{10,}?(?:\\.|\\n|$))`, 'gm'),
+                    // Pattern 2: Frase com número no começo
+                    new RegExp(`(^${verseNumber}\\s[^\\n]+)`, 'gm'),
+                    // Pattern 3: Qualquer ocorrência do número seguido de texto
+                    new RegExp(`(${verseNumber}[\\s.:]+[^0-9\\n]{20,}?)(?=\\n|$)`, 'gm')
+                ];
+                
+                let foundAndHighlighted = false;
+                
+                for (const pattern of patterns) {
+                    const matches = textoProcessado.match(pattern);
+                    if (matches && matches.length > 0) {
+                        textoProcessado = textoProcessado.replace(
+                            pattern,
+                            (match) => {
+                                const cleaned = match.trim();
+                                return `<mark class="verse-highlight">${cleaned}</mark>`;
+                            }
+                        );
+                        foundAndHighlighted = true;
+                        console.log('✅ Versículo destacado com sucesso');
+                        break;
+                    }
+                }
+                
+                if (!foundAndHighlighted) {
+                    console.log('⚠️ Não conseguiu identificar o versículo específico automaticamente');
+                    // Destaca a primeira frase longa como fallback
+                    const firstSentence = textoProcessado.match(/[^.!?]{50,}?[.!?]/);
+                    if (firstSentence) {
+                        textoProcessado = textoProcessado.replace(
+                            firstSentence[0],
+                            `<mark class="verse-highlight">${firstSentence[0]}</mark>`
+                        );
+                    }
+                }
+            }
+            
+            // Formata parágrafos
+            textoProcessado = textoProcessado.replace(/\n\n+/g, '</p><p>');
+            
+            verseModalContent.innerHTML = `
+                <div class="verse-context">
+                    <p class="text-sm text-amber-400 mb-4 flex items-center gap-2">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Contexto completo do capítulo
+                    </p>
+                    <div class="verse-text">
+                        <p>${textoProcessado}</p>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-4 pt-4 border-t border-slate-700">
+                        💡 O versículo destacado está no contexto acima
+                    </p>
+                </div>
+            `;
+            
             verseModal.classList.remove('hidden');
             verseModal.classList.add('show');
         }
@@ -699,7 +787,7 @@
                 
                 console.log(`✅ Total de fontes recebidas: ${fontes.length}`);
                 
-                // 🔥 SUBSTITUI ** ( ) ** POR HTML CLICÁVEL **ANTES** DO MARKDOWN
+                // SUBSTITUI **(...)** POR HTML CLICÁVEL ANTES DO MARKDOWN
                 let countSubstituicoes = 0;
                 
                 respostaTextoFinal = respostaTextoFinal.replace(
@@ -708,7 +796,6 @@
                         countSubstituicoes++;
                         console.log(`🔍 [${countSubstituicoes}] Processando referência: "${ref}"`);
                         
-                        // Regex para extrair: Livro Capítulo:Versículo - TRADUÇÃO
                         const refParts = ref.match(/^(.+?)\s+(\d+):(\d+(?:-\d+)?)\s*-\s*(NVI|ACF|AA)$/);
                         
                         if (!refParts) {
@@ -721,7 +808,6 @@
                         
                         console.log(`   📖 Buscando: ${refCompleta} (${trad})`);
                         
-                        // Busca o versículo completo nas fontes
                         const fonte = fontes.find(f => 
                             f.referencia === refCompleta && f.traducao === trad
                         );
@@ -743,7 +829,7 @@
                 
                 console.log(`🎯 Total de substituições realizadas: ${countSubstituicoes}`);
                 
-                // Agora converte o markdown para HTML
+                // Converte markdown para HTML
                 let htmlContent = marked.parse(respostaTextoFinal);
                 
                 respostaTexto.innerHTML = htmlContent;
@@ -786,7 +872,6 @@
                 loadingArea.classList.add('hidden');
                 respostaArea.classList.remove('hidden');
                 
-                // Scroll suave até a resposta
                 setTimeout(() => {
                     respostaArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 300);
