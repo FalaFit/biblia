@@ -103,26 +103,56 @@
             margin: 2.5rem 0;
         }
 
-        /* Referências bíblicas em destaque */
+        /* 🆕 Referências bíblicas CLICÁVEIS em destaque */
         .verse-ref {
             display: inline-block;
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(245, 158, 11, 0.2) 100%);
-            border: 2px solid rgba(251, 191, 36, 0.5);
-            padding: 3px 10px;
-            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.25) 0%, rgba(245, 158, 11, 0.25) 100%);
+            border: 2px solid rgba(251, 191, 36, 0.6);
+            padding: 4px 12px;
+            border-radius: 10px;
             font-weight: 700;
             color: #fbbf24;
             font-size: 0.95em;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.2);
+            box-shadow: 0 3px 10px rgba(251, 191, 36, 0.3);
+            position: relative;
+        }
+
+        .verse-ref::before {
+            content: "📖";
+            margin-right: 6px;
+            font-size: 0.9em;
         }
 
         .verse-ref:hover {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.35) 0%, rgba(245, 158, 11, 0.35) 100%);
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.4) 0%, rgba(245, 158, 11, 0.4) 100%);
             border-color: #fbbf24;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(251, 191, 36, 0.4);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(251, 191, 36, 0.5);
+        }
+
+        .verse-ref::after {
+            content: "Clique para ver contexto";
+            position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: rgba(0, 0, 0, 0.9);
+            color: #fbbf24;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75em;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .verse-ref:hover::after {
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
         }
 
         .verse-ref-plain {
@@ -130,15 +160,15 @@
             font-weight: 600;
         }
 
-        /* Modal de versículo */
+        /* 🆕 Modal de versículo MELHORADO */
         .verse-modal {
             position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(10px);
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(12px);
             z-index: 9999;
             display: flex;
             align-items: center;
@@ -148,13 +178,13 @@
 
         .verse-modal-content {
             background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-            border: 2px solid rgba(251, 191, 36, 0.3);
-            border-radius: 20px;
-            max-width: 800px;
+            border: 3px solid rgba(251, 191, 36, 0.4);
+            border-radius: 24px;
+            max-width: 900px;
             width: 100%;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.9);
         }
 
         @keyframes slideUp {
@@ -163,21 +193,44 @@
         }
 
         .verse-modal.show .verse-modal-content {
-            animation: slideUp 0.4s ease-out;
+            animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* 🆕 Destaque do versículo específico no contexto */
+        .verse-highlight {
+            background: rgba(251, 191, 36, 0.15);
+            border-left: 4px solid #fbbf24;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 8px;
+            font-weight: 600;
+            position: relative;
+        }
+
+        .verse-highlight::before {
+            content: "→";
+            color: #fbbf24;
+            font-size: 1.5em;
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
         /* Scrollbar customizada */
         ::-webkit-scrollbar {
-            width: 10px;
+            width: 12px;
         }
 
         ::-webkit-scrollbar-track {
             background: #1e293b;
+            border-radius: 10px;
         }
 
         ::-webkit-scrollbar-thumb {
             background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
             border-radius: 10px;
+            border: 2px solid #1e293b;
         }
 
         ::-webkit-scrollbar-thumb:hover {
@@ -347,7 +400,7 @@
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                         <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
-                            Como Deus criou o mundo?
+                            Onde Jesus nasceu?
                         </button>
                         <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
                             Quem foi Abraão?
@@ -442,7 +495,7 @@
                             <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                             </svg>
-                            Clique nas referências douradas para ver o versículo em contexto
+                            📖 Clique nas referências douradas para ver o contexto completo do capítulo
                         </span>
                         <span id="respostaTimestamp"></span>
                     </div>
@@ -464,27 +517,38 @@
         </footer>
     </div>
 
-    <!-- ==================== MODAL DE VERSÍCULO ==================== -->
+    <!-- ==================== 🆕 MODAL DE VERSÍCULO MELHORADO ==================== -->
     <div id="verseModal" class="verse-modal hidden">
         <div class="verse-modal-content">
+            <!-- Header Melhorado -->
             <div class="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 p-6 flex items-center justify-between">
-                <div>
-                    <h3 id="verseModalTitle" class="text-2xl font-bold text-white mb-1">Versículo Bíblico</h3>
+                <div class="flex-1">
+                    <h3 id="verseModalTitle" class="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        Versículo Bíblico
+                    </h3>
                     <p id="verseModalSubtitle" class="text-amber-100 text-sm"></p>
                 </div>
-                <button id="closeVerseBtn" class="bg-white/20 hover:bg-white/30 text-white p-3 rounded-xl transition-all">
+                <button id="closeVerseBtn" class="bg-white/20 hover:bg-white/30 text-white p-3 rounded-xl transition-all flex-shrink-0 ml-4">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                     </svg>
                 </button>
             </div>
             
+            <!-- Conteúdo -->
             <div class="p-8">
                 <div id="verseModalContent" class="text-slate-100 text-lg leading-relaxed"></div>
             </div>
 
+            <!-- Footer -->
             <div class="bg-slate-900/50 px-8 py-4 text-center border-t border-amber-500/20">
-                <p class="text-sm text-slate-400">
+                <p class="text-sm text-slate-400 flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
                     📖 Clique fora ou pressione ESC para fechar
                 </p>
             </div>
@@ -615,65 +679,65 @@
         }
 
         // ==========================================
-        // MODAL DE VERSÍCULO COM DEBUG
+        // 🆕 MODAL DE VERSÍCULO MELHORADO COM CONTEXTO
         // ==========================================
-        function openVerseModal(referencia, traducao, texto) {
+        function openVerseModal(referencia, traducao, textoContexto) {
             console.log('');
             console.log('📖 ===== MODAL DEBUG =====');
             console.log('Referência:', referencia);
             console.log('Tradução:', traducao);
-            console.log('Tamanho do texto:', texto?.length || 0);
-            console.log('Primeiros 300 chars:', texto?.substring(0, 300));
-            console.log('Últimos 100 chars:', texto?.substring(texto.length - 100));
+            console.log('Tamanho do contexto:', textoContexto?.length || 0);
             console.log('==========================');
             console.log('');
             
             verseModalTitle.textContent = referencia;
-            verseModalSubtitle.textContent = `${traducao} • Contexto do capítulo`;
+            verseModalSubtitle.textContent = `${traducao} • Contexto completo do capítulo`;
             
-            // Se o texto for muito curto, alerta
-            if (texto && texto.length < 100) {
-                console.warn('⚠️ TEXTO MUITO CURTO! Provavelmente só o versículo isolado.');
-                console.warn('   Esperado: ~800 chars (chunk completo)');
-                console.warn('   Recebido:', texto.length, 'chars');
-            }
-            
-            // Formata o texto
-            let textoFormatado = texto
+            // Formata o texto com quebras de parágrafo
+            let textoFormatado = textoContexto
                 .replace(/\n\n+/g, '</p><p class="mb-4 text-slate-100">')
                 .replace(/\n/g, '<br>');
             
-            // Envolve em parágrafo se necessário
+            // Envolve em parágrafos
             if (!textoFormatado.includes('<p')) {
                 textoFormatado = `<p class="mb-4 text-slate-100">${textoFormatado}</p>`;
             }
             
             verseModalContent.innerHTML = `
                 <div class="verse-context">
-                    <div class="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 mb-4 flex items-start gap-2">
-                        <svg class="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="bg-amber-500/10 border-2 border-amber-500/30 rounded-xl p-4 mb-6 flex items-start gap-3">
+                        <svg class="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
                         <div class="text-sm text-amber-200">
-                            <p class="font-semibold mb-1">Contexto bíblico</p>
-                            <p class="text-amber-300/80">Este trecho contém o versículo ${referencia} e versículos relacionados do capítulo</p>
+                            <p class="font-bold mb-2 text-base">📖 Contexto Bíblico Completo</p>
+                            <p class="text-amber-300/90 leading-relaxed">
+                                Este trecho apresenta <strong class="text-amber-100">${referencia}</strong> 
+                                juntamente com os versículos adjacentes do capítulo, 
+                                fornecendo o contexto narrativo completo para melhor compreensão.
+                            </p>
                         </div>
                     </div>
                     
-                    <div class="verse-text bg-slate-900/50 rounded-xl p-6 border-2 border-amber-500/20">
-                        <blockquote class="border-l-4 border-amber-500 pl-6 italic leading-relaxed">
+                    <div class="verse-text bg-slate-900/60 rounded-xl p-6 border-2 border-amber-500/20 shadow-inner">
+                        <blockquote class="border-l-4 border-amber-500 pl-6 italic leading-relaxed text-slate-50">
                             ${textoFormatado}
                         </blockquote>
                     </div>
                     
-                    <div class="mt-4 pt-4 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">
-                        <span class="flex items-center gap-2">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                    <div class="mt-6 pt-4 border-t border-slate-700/50 grid grid-cols-2 gap-4 text-xs text-slate-400">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                             </svg>
-                            Trecho extraído das Escrituras
-                        </span>
-                        <span>${texto?.length || 0} caracteres</span>
+                            <span>Trecho das Escrituras Sagradas</span>
+                        </div>
+                        <div class="text-right flex items-center justify-end gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span>${textoContexto?.length || 0} caracteres</span>
+                        </div>
                     </div>
                 </div>
             `;
@@ -758,7 +822,6 @@
                 console.log('🔍 ===== DEBUG COMPLETO =====');
                 console.log('📦 Resposta completa:', data);
                 console.log('📊 Fontes:', data.fontes);
-                console.log('📝 Resposta texto:', data.resposta);
                 console.log('============================');
                 
                 let respostaTextoFinal = data.resposta || data.message?.content || '';
@@ -766,19 +829,19 @@
                 
                 console.log(`✅ Total de fontes recebidas: ${fontes.length}`);
                 
-                // SUBSTITUI **(...)** POR HTML CLICÁVEL ANTES DO MARKDOWN
+                // 🆕 SUBSTITUI **(...)** POR HTML CLICÁVEL - USA texto_contexto!
                 let countSubstituicoes = 0;
                 
                 respostaTextoFinal = respostaTextoFinal.replace(
                     /\*\*\(([^)]+)\)\*\*/g,
                     (match, ref) => {
                         countSubstituicoes++;
-                        console.log(`🔍 [${countSubstituicoes}] Processando referência: "${ref}"`);
+                        console.log(`🔍 [${countSubstituicoes}] Processando: "${ref}"`);
                         
                         const refParts = ref.match(/^(.+?)\s+(\d+):(\d+(?:-\d+)?)\s*-\s*(NVI|ACF|AA)$/);
                         
                         if (!refParts) {
-                            console.warn(`⚠️ Referência não reconhecida: "${ref}"`);
+                            console.warn(`⚠️ Formato não reconhecido: "${ref}"`);
                             return `<span class="verse-ref-plain">${ref}</span>`;
                         }
                         
@@ -791,14 +854,15 @@
                             f.referencia === refCompleta && f.traducao === trad
                         );
                         
-                        if (fonte && fonte.texto) {
-                            console.log(`   ✅ ENCONTRADO! Texto: "${fonte.texto.substring(0, 50)}..."`);
-                            const textoEscapado = fonte.texto
+                        if (fonte && fonte.texto_contexto) {
+                            console.log(`   ✅ ENCONTRADO! Contexto: ${fonte.texto_contexto.length} chars`);
+                            
+                            const textoEscapado = fonte.texto_contexto
                                 .replace(/"/g, '&quot;')
                                 .replace(/'/g, '&#39;')
                                 .replace(/\n/g, ' ');
                             
-                            return `<span class="verse-ref" data-ref="${refCompleta}" data-trad="${trad}" data-texto="${textoEscapado}">${ref}</span>`;
+                            return `<span class="verse-ref" data-ref="${refCompleta}" data-trad="${trad}" data-contexto="${textoEscapado}">${ref}</span>`;
                         } else {
                             console.warn(`   ⚠️ NÃO ENCONTRADO nas fontes`);
                             return `<span class="verse-ref-plain">${ref}</span>`;
@@ -806,19 +870,19 @@
                     }
                 );
                 
-                console.log(`🎯 Total de substituições realizadas: ${countSubstituicoes}`);
+                console.log(`🎯 Total de substituições: ${countSubstituicoes}`);
                 
                 // Converte markdown para HTML
                 let htmlContent = marked.parse(respostaTextoFinal);
                 
-                // 🧹 LIMPA FORMATAÇÃO PROBLEMÁTICA
+                // Limpa formatação problemática
                 htmlContent = limparFormatacaoProblematica(htmlContent);
                 
                 respostaTexto.innerHTML = htmlContent;
                 
-                // Adiciona evento de clique nas referências
+                // 🆕 Adiciona evento de clique nas referências (usa data-contexto!)
                 const verseRefs = respostaTexto.querySelectorAll('.verse-ref');
-                console.log(`🖱️ Total de elementos .verse-ref encontrados: ${verseRefs.length}`);
+                console.log(`🖱️ Total de .verse-ref encontrados: ${verseRefs.length}`);
                 
                 verseRefs.forEach((ref, idx) => {
                     console.log(`   [${idx+1}] Adicionando click em: ${ref.dataset.ref}`);
@@ -826,14 +890,15 @@
                     ref.addEventListener('click', () => {
                         const referencia = ref.dataset.ref;
                         const traducao = ref.dataset.trad;
-                        const texto = ref.dataset.texto;
+                        const contexto = ref.dataset.contexto; // 🆕 Usa contexto!
                         
-                        console.log(`🖱️ CLIQUE! Abrindo modal para: ${referencia}`);
+                        console.log(`🖱️ CLIQUE! Modal: ${referencia}`);
+                        console.log(`   Contexto: ${contexto?.length || 0} chars`);
                         
-                        if (referencia && texto) {
-                            openVerseModal(referencia, traducao, texto);
+                        if (referencia && contexto) {
+                            openVerseModal(referencia, traducao, contexto);
                         } else {
-                            console.error('❌ Dados incompletos:', {referencia, traducao, texto: texto?.substring(0, 30)});
+                            console.error('❌ Dados incompletos:', {referencia, traducao, contexto: contexto?.substring(0, 30)});
                         }
                     });
                 });
