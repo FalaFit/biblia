@@ -166,28 +166,6 @@
             animation: slideUp 0.4s ease-out;
         }
 
-        /* Destaque do versículo no modal */
-        .verse-highlight {
-            background: linear-gradient(135deg, rgba(251, 191, 36, 0.25) 0%, rgba(245, 158, 11, 0.25) 100%);
-            border-left: 4px solid #fbbf24;
-            padding: 0.75rem 1.25rem;
-            display: block;
-            margin: 1rem 0;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            color: #fef3c7;
-            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.2);
-        }
-
-        .verse-context {
-            line-height: 1.8;
-        }
-
-        .verse-text p {
-            margin-bottom: 1rem;
-            color: #e2e8f0;
-        }
-
         /* Scrollbar customizada */
         ::-webkit-scrollbar {
             width: 10px;
@@ -620,68 +598,107 @@
         });
 
         // ==========================================
-// MODAL DE VERSÍCULO COM CONTEXTO
-// ==========================================
-function openVerseModal(referencia, traducao, texto) {
-    console.log('📖 Abrindo modal para:', referencia);
-    console.log('📝 Texto recebido (primeiros 200 chars):', texto.substring(0, 200));
-    
-    verseModalTitle.textContent = referencia;
-    verseModalSubtitle.textContent = `${traducao} • Contexto do capítulo`;
-    
-    // Formata o texto do chunk
-    // Substitui quebras duplas por parágrafos
-    let textoFormatado = texto
-        .replace(/\n\n+/g, '</p><p class="mb-4">')
-        .replace(/\n/g, '<br>');
-    
-    // Se não tiver parágrafos, envolve tudo em um
-    if (!textoFormatado.includes('<p')) {
-        textoFormatado = `<p class="mb-4">${textoFormatado}</p>`;
-    }
-    
-    verseModalContent.innerHTML = `
-        <div class="verse-context">
-            <p class="text-sm text-amber-400 mb-4 flex items-center gap-2">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                </svg>
-                Contexto bíblico contendo ${referencia}
-            </p>
-            <div class="verse-text bg-slate-900/30 rounded-xl p-6 border border-amber-500/20">
-                <blockquote class="border-l-4 border-amber-500 pl-6 italic text-amber-100 leading-relaxed">
-                    ${textoFormatado}
-                </blockquote>
-            </div>
-            <p class="text-xs text-slate-400 mt-4 pt-4 border-t border-slate-700 flex items-center gap-2">
-                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                </svg>
-                Este é um trecho do capítulo que contém o versículo ${referencia}
-            </p>
-        </div>
-    `;
-    
-    verseModal.classList.remove('hidden');
-    verseModal.classList.add('show');
-}
+        // FUNÇÃO DE LIMPEZA DE FORMATAÇÃO
+        // ==========================================
+        function limparFormatacaoProblematica(html) {
+            console.log('🧹 Limpando formatação problemática...');
+            
+            // Remove <strong>1.</strong>, <strong>2.</strong>, etc
+            html = html.replace(/<strong>(\d+)\.<\/strong>\s*\n/g, '$1.\n');
+            html = html.replace(/<strong>(\d+)\.<\/strong>\s*/g, '$1. ');
+            
+            // Remove <strong>**1.</strong> (asteriscos literais)
+            html = html.replace(/<strong>\*\*(\d+)\.<\/strong>/g, '$1.');
+            
+            console.log('✅ Limpeza concluída');
+            return html;
+        }
 
-function closeVerseModal() {
-    verseModal.classList.add('hidden');
-    verseModal.classList.remove('show');
-}
+        // ==========================================
+        // MODAL DE VERSÍCULO COM DEBUG
+        // ==========================================
+        function openVerseModal(referencia, traducao, texto) {
+            console.log('');
+            console.log('📖 ===== MODAL DEBUG =====');
+            console.log('Referência:', referencia);
+            console.log('Tradução:', traducao);
+            console.log('Tamanho do texto:', texto?.length || 0);
+            console.log('Primeiros 300 chars:', texto?.substring(0, 300));
+            console.log('Últimos 100 chars:', texto?.substring(texto.length - 100));
+            console.log('==========================');
+            console.log('');
+            
+            verseModalTitle.textContent = referencia;
+            verseModalSubtitle.textContent = `${traducao} • Contexto do capítulo`;
+            
+            // Se o texto for muito curto, alerta
+            if (texto && texto.length < 100) {
+                console.warn('⚠️ TEXTO MUITO CURTO! Provavelmente só o versículo isolado.');
+                console.warn('   Esperado: ~800 chars (chunk completo)');
+                console.warn('   Recebido:', texto.length, 'chars');
+            }
+            
+            // Formata o texto
+            let textoFormatado = texto
+                .replace(/\n\n+/g, '</p><p class="mb-4 text-slate-100">')
+                .replace(/\n/g, '<br>');
+            
+            // Envolve em parágrafo se necessário
+            if (!textoFormatado.includes('<p')) {
+                textoFormatado = `<p class="mb-4 text-slate-100">${textoFormatado}</p>`;
+            }
+            
+            verseModalContent.innerHTML = `
+                <div class="verse-context">
+                    <div class="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 mb-4 flex items-start gap-2">
+                        <svg class="w-5 h-5 text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div class="text-sm text-amber-200">
+                            <p class="font-semibold mb-1">Contexto bíblico</p>
+                            <p class="text-amber-300/80">Este trecho contém o versículo ${referencia} e versículos relacionados do capítulo</p>
+                        </div>
+                    </div>
+                    
+                    <div class="verse-text bg-slate-900/50 rounded-xl p-6 border-2 border-amber-500/20">
+                        <blockquote class="border-l-4 border-amber-500 pl-6 italic leading-relaxed">
+                            ${textoFormatado}
+                        </blockquote>
+                    </div>
+                    
+                    <div class="mt-4 pt-4 border-t border-slate-700/50 flex items-center justify-between text-xs text-slate-400">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                            Trecho extraído das Escrituras
+                        </span>
+                        <span>${texto?.length || 0} caracteres</span>
+                    </div>
+                </div>
+            `;
+            
+            verseModal.classList.remove('hidden');
+            verseModal.classList.add('show');
+        }
 
-closeVerseBtn.addEventListener('click', closeVerseModal);
+        function closeVerseModal() {
+            verseModal.classList.add('hidden');
+            verseModal.classList.remove('show');
+        }
 
-verseModal.addEventListener('click', (e) => {
-    if (e.target === verseModal) closeVerseModal();
-});
+        closeVerseBtn.addEventListener('click', closeVerseModal);
+        
+        verseModal.addEventListener('click', (e) => {
+            if (e.target === verseModal) closeVerseModal();
+        });
 
-document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && !verseModal.classList.contains('hidden')) {
-        closeVerseModal();
-    }
-});
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !verseModal.classList.contains('hidden')) {
+                closeVerseModal();
+            }
+        });
+
         // ==========================================
         // CONSULTA
         // ==========================================
@@ -793,6 +810,9 @@ document.addEventListener('keydown', (e) => {
                 
                 // Converte markdown para HTML
                 let htmlContent = marked.parse(respostaTextoFinal);
+                
+                // 🧹 LIMPA FORMATAÇÃO PROBLEMÁTICA
+                htmlContent = limparFormatacaoProblematica(htmlContent);
                 
                 respostaTexto.innerHTML = htmlContent;
                 
