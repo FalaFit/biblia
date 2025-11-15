@@ -121,6 +121,12 @@
             background: linear-gradient(135deg, rgba(251, 191, 36, 0.25) 0%, rgba(245, 158, 11, 0.25) 100%);
             border-color: #fbbf24;
             transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.3);
+        }
+
+        .verse-ref-plain {
+            color: #fbbf24;
+            font-weight: 600;
         }
 
         /* Modal de versículo */
@@ -314,7 +320,7 @@
                 <div class="flex flex-col md:flex-row gap-4">
                     <textarea 
                         id="perguntaInput" 
-                        placeholder="Ex: O que a Bíblia diz sobre fé? ou Quem foi Moisés?" 
+                        placeholder="Ex: O que a Bíblia diz sobre fé? ou Quem foi Abraão?" 
                         class="flex-1 bg-slate-900/70 text-white placeholder-slate-500 rounded-2xl border-2 border-slate-600 focus:border-amber-500 px-6 py-4 focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-none transition-all shadow-inner"
                         rows="3"
                     ></textarea>
@@ -346,7 +352,7 @@
                             Quem foi Abraão?
                         </button>
                         <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
-                            História de Moisés e o Egito
+                            A história de José do Egito
                         </button>
                         <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
                             Os 10 mandamentos
@@ -355,7 +361,7 @@
                             O que Deus disse sobre amar o próximo?
                         </button>
                         <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
-                            A história de José do Egito
+                            História de Moisés
                         </button>
                     </div>
                 </div>
@@ -492,7 +498,7 @@
             username: 'admin',
             password: 'mvpmvp',
             webhookUrl: 'https://planejamentocomercialtvx.app.n8n.cloud/webhook/biblia-query',
-            sessionTimeout: 2 * 60 * 60 * 1000 // 2 horas
+            sessionTimeout: 2 * 60 * 60 * 1000
         };
 
         // ==========================================
@@ -674,24 +680,49 @@
                 }
 
                 const data = await response.json();
-                console.log('Resposta completa:', data);
+                console.log('📦 Resposta completa:', data);
                 
-                const respostaTextoFinal = data.resposta || data.message?.content || '';
+                let respostaTextoFinal = data.resposta || data.message?.content || '';
                 const fontes = data.fontes || [];
                 
-                // Converte markdown para HTML
+                console.log('📊 Total de fontes recebidas:', fontes.length);
+                
+                // 🔥 PROCESSAMENTO ANTES DO MARKDOWN!
+                // Substitui **(Referência - Tradução)** por spans clicáveis
+                
+                respostaTextoFinal = respostaTextoFinal.replace(
+                    /\*\*\(([^)]+)\)\*\*/g,
+                    (match, ref) => {
+                        // Extrai informações da referência
+                        const refParts = ref.match(/^(.+?)\s+(\d+):(\d+(?:-\d+)?)\s*-\s*(NVI|ACF|AA)$/);
+                        
+                        if (!refParts) {
+                            console.warn('⚠️ Referência não reconhecida:', ref);
+                            return `<span class="verse-ref-plain">${ref}</span>`;
+                        }
+                        
+                        const [_, livro, cap, vers, trad] = refParts;
+                        const refCompleta = `${livro} ${cap}:${vers}`;
+                        
+                        // Busca o versículo completo nas fontes
+                        const fonte = fontes.find(f => 
+                            f.referencia === refCompleta && f.traducao === trad
+                        );
+                        
+                        if (fonte && fonte.texto) {
+                            console.log('✅ Versículo encontrado:', refCompleta);
+                            const textoEscapado = fonte.texto.replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+                            return `<span class="verse-ref" data-ref="${refCompleta}" data-trad="${trad}" data-texto="${textoEscapado}">${ref}</span>`;
+                        } else {
+                            console.warn('⚠️ Versículo não encontrado nas fontes:', refCompleta);
+                            return `<span class="verse-ref-plain">${ref}</span>`;
+                        }
+                    }
+                );
+                
+                // Agora converte o markdown para HTML
                 let htmlContent = marked.parse(respostaTextoFinal);
                 
-                // Destaca referências bíblicas (formato **(...)**)
-                htmlContent = htmlContent.replace(/\*\*\(([^)]+)\)\*\*/g, (match, ref) => {
-                    // Busca o versículo nas fontes
-                    const fonte = fontes.find(f => ref.includes(f.referencia));
-                    if (fonte) {
-                        return `<span class="verse-ref" data-ref="${fonte.referencia}" data-trad="${fonte.traducao}" data-texto="${fonte.texto_preview.replace(/"/g, '&quot;')}">${ref}</span>`;
-                    }
-                    return `<span class="verse-ref">${ref}</span>`;
-                });
-
                 respostaTexto.innerHTML = htmlContent;
                 
                 // Adiciona evento de clique nas referências
@@ -701,15 +732,19 @@
                         const traducao = ref.dataset.trad;
                         const texto = ref.dataset.texto;
                         
+                        console.log('🖱️ Clique na referência:', referencia);
+                        
                         if (referencia && texto) {
                             openVerseModal(referencia, traducao, texto);
+                        } else {
+                            console.error('❌ Dados incompletos para abrir modal');
                         }
                     });
                 });
 
                 // Mostra livros citados
                 if (fontes.length > 0) {
-                    const livrosUnicos = [...new Set(fontes.map(f => f.livro))];
+                    const livrosUnicos = [...new Set(fontes.map(f => f.livro).filter(Boolean))];
                     livrosCitadosList.innerHTML = livrosUnicos.map(livro => 
                         `<span class="inline-block bg-amber-500/10 border border-amber-500/30 text-amber-300 px-3 py-1 rounded-lg text-sm font-medium">${livro}</span>`
                     ).join('');
@@ -729,7 +764,7 @@
                 }, 300);
                 
             } catch (err) {
-                console.error('Erro:', err);
+                console.error('❌ Erro:', err);
                 
                 loadingArea.classList.add('hidden');
                 errorArea.classList.remove('hidden');
