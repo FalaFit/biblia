@@ -8,39 +8,39 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Open+Sans:wght@400;600;700&display=swap');
-
+        
         body { 
             font-family: 'Open Sans', sans-serif;
         }
-
+        
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Merriweather', serif;
         }
-
+        
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-
+        
         .animate-fade-in { 
             animation: fadeIn 0.6s ease-out; 
         }
-
+        
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
             10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
             20%, 40%, 60%, 80% { transform: translateX(5px); }
         }
-
+        
         .animate-shake { 
             animation: shake 0.5s; 
         }
-
+        
         @keyframes glow {
             0%, 100% { box-shadow: 0 0 30px rgba(234, 179, 8, 0.4); }
             50% { box-shadow: 0 0 50px rgba(234, 179, 8, 0.6); }
         }
-
+        
         .glow-animation { 
             animation: glow 3s ease-in-out infinite; 
         }
@@ -49,7 +49,7 @@
             0%, 100% { transform: translateY(0px); }
             50% { transform: translateY(-10px); }
         }
-
+        
         .float-animation { 
             animation: float 3s ease-in-out infinite; 
         }
@@ -239,7 +239,7 @@
     </style>
 </head>
 <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen">
-
+    
     <!-- ==================== TELA DE LOGIN ==================== -->
     <div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
@@ -307,7 +307,7 @@
 
     <!-- ==================== APLICAÇÃO PRINCIPAL ==================== -->
     <div id="mainApp" class="hidden min-h-screen">
-
+        
         <!-- Header -->
         <header class="bg-gradient-to-r from-amber-600/10 via-amber-500/10 to-amber-600/10 backdrop-blur-sm border-b border-amber-500/20 sticky top-0 z-50">
             <div class="max-w-6xl mx-auto px-6 py-4">
@@ -326,7 +326,7 @@
                             <p class="text-sm text-amber-200/70">Consultoria espiritual com tecnologia IA</p>
                         </div>
                     </div>
-
+                    
                     <button id="logoutButton" class="px-4 py-2 bg-slate-700/50 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors text-sm">
                         Sair
                     </button>
@@ -336,7 +336,7 @@
 
         <!-- Main Content -->
         <main class="max-w-6xl mx-auto px-6 py-8">
-
+            
             <!-- Hero Section -->
             <div class="text-center mb-12 animate-fade-in">
                 <div class="inline-block mb-6">
@@ -349,7 +349,7 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
                     Tire suas dúvidas com a
                     <span class="gradient-text">Palavra de Deus</span>
@@ -370,7 +370,7 @@
                     </svg>
                     Faça sua pergunta sobre a Bíblia:
                 </label>
-
+                
                 <div class="flex flex-col md:flex-row gap-4">
                     <textarea 
                         id="perguntaInput" 
@@ -378,7 +378,7 @@
                         class="flex-1 bg-slate-900/70 text-white placeholder-slate-500 rounded-2xl border-2 border-slate-600 focus:border-amber-500 px-6 py-4 focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-none transition-all shadow-inner"
                         rows="3"
                     ></textarea>
-
+                    
                     <button 
                         id="consultarButton" 
                         class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 disabled:from-slate-700 disabled:to-slate-700 disabled:cursor-not-allowed text-white px-8 py-4 rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 font-bold text-lg shadow-2xl hover:shadow-amber-500/50 transform hover:scale-105 disabled:transform-none"
@@ -478,7 +478,7 @@
 
                 <div class="p-8">
                     <div id="respostaTexto" class="text-slate-100 text-lg prose prose-invert max-w-none"></div>
-
+                    
                     <!-- Livros Citados -->
                     <div id="livrosCitadosArea" class="mt-8 p-6 bg-amber-500/5 border border-amber-500/20 rounded-2xl">
                         <p class="text-amber-400 font-semibold mb-3 flex items-center gap-2">
@@ -489,7 +489,7 @@
                         </p>
                         <div id="livrosCitadosList" class="flex flex-wrap gap-2"></div>
                     </div>
-
+                    
                     <div class="mt-6 pt-6 border-t border-slate-700/50 flex items-center justify-between text-sm text-slate-500">
                         <span class="flex items-center gap-2">
                             <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -537,7 +537,7 @@
                     </svg>
                 </button>
             </div>
-
+            
             <!-- Conteúdo -->
             <div class="p-8">
                 <div id="verseModalContent" class="text-slate-100 text-lg leading-relaxed"></div>
@@ -605,12 +605,12 @@
         // ==========================================
         function checkAuth() {
             const authDataStr = localStorage.getItem('authBibliaData');
-
+            
             if (authDataStr) {
                 try {
                     const authData = JSON.parse(authDataStr);
                     const now = Date.now();
-
+                    
                     if (authData.expiresAt && now > authData.expiresAt) {
                         localStorage.removeItem('authBibliaData');
                         showLogin();
@@ -640,12 +640,12 @@
 
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
-
+            
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
-
+            
             loginError.classList.add('hidden');
-
+            
             if (username === CONFIG.username && password === CONFIG.password) {
                 const loginData = {
                     authenticated: true,
@@ -671,14 +671,14 @@
         // ==========================================
         function limparFormatacaoProblematica(html) {
             console.log('🧹 Limpando formatação problemática...');
-
+            
             // Remove <strong>1.</strong>, <strong>2.</strong>, etc
             html = html.replace(/<strong>(\d+)\.<\/strong>\s*\n/g, '$1.\n');
             html = html.replace(/<strong>(\d+)\.<\/strong>\s*/g, '$1. ');
-
+            
             // Remove <strong>**1.</strong> (asteriscos literais)
             html = html.replace(/<strong>\*\*(\d+)\.<\/strong>/g, '$1.');
-
+            
             console.log('✅ Limpeza concluída');
             return html;
         }
@@ -723,14 +723,6 @@
         // ==========================================
         // 🆕 MODAL DE VERSÍCULO MELHORADO COM CONTEXTO
         // ==========================================
-        function openVerseModal(referencia, traducao, textoContexto) {
-            console.log('');
-            console.log('📖 ===== MODAL DEBUG =====');
-            console.log('Referência:', referencia);
-            console.log('Tradução:', traducao);
-            console.log('Tamanho do contexto:', textoContexto?.length || 0);
-            console.log('==========================');
-            console.log('');
         function openVerseModal(indice) {
             console.log('📖 ===== ABRINDO MODAL =====');
             console.log('Índice da fonte:', indice);
@@ -747,21 +739,19 @@
             
             verseModalTitle.textContent = fonte.referencia;
             verseModalSubtitle.textContent = `${fonte.traducao} • Contexto completo do capítulo`;
-
-            verseModalTitle.textContent = referencia;
-            verseModalSubtitle.textContent = `${traducao} • Contexto completo do capítulo`;
+            
             const textoContexto = fonte.texto_contexto || fonte.texto || '';
-
+            
             // Formata o texto com quebras de parágrafo
             let textoFormatado = textoContexto
                 .replace(/\n\n+/g, '</p><p class="mb-4 text-slate-100">')
                 .replace(/\n/g, '<br>');
-
+            
             // Envolve em parágrafos
             if (!textoFormatado.includes('<p')) {
                 textoFormatado = `<p class="mb-4 text-slate-100">${textoFormatado}</p>`;
             }
-
+            
             verseModalContent.innerHTML = `
                 <div class="verse-context">
                     <div class="bg-amber-500/10 border-2 border-amber-500/30 rounded-xl p-4 mb-6 flex items-start gap-3">
@@ -771,7 +761,6 @@
                         <div class="text-sm text-amber-200">
                             <p class="font-bold mb-2 text-base">📖 Contexto Bíblico Completo</p>
                             <p class="text-amber-300/90 leading-relaxed">
-                                Este trecho apresenta <strong class="text-amber-100">${referencia}</strong> 
                                 Este trecho apresenta <strong class="text-amber-100">${fonte.referencia}</strong> 
                                 juntamente com os versículos adjacentes do capítulo, 
                                 fornecendo o contexto narrativo completo para melhor compreensão.
@@ -796,13 +785,12 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
-                            <span>${textoContexto?.length || 0} caracteres</span>
                             <span>${textoContexto.length} caracteres</span>
                         </div>
                     </div>
                 </div>
             `;
-
+            
             verseModal.classList.remove('hidden');
             verseModal.classList.add('show');
         }
@@ -813,7 +801,7 @@
         }
 
         closeVerseBtn.addEventListener('click', closeVerseModal);
-
+        
         verseModal.addEventListener('click', (e) => {
             if (e.target === verseModal) closeVerseModal();
         });
@@ -828,7 +816,7 @@
         // CONSULTA
         // ==========================================
         consultarButton.addEventListener('click', fazerPergunta);
-
+        
         perguntaInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
@@ -853,7 +841,7 @@
 
         async function fazerPergunta() {
             const pergunta = perguntaInput.value.trim();
-
+            
             if (!pergunta) {
                 perguntaInput.focus();
                 return;
@@ -861,7 +849,7 @@
 
             consultarButton.disabled = true;
             consultarButton.innerHTML = '<svg class="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Consultando...';
-
+            
             errorArea.classList.add('hidden');
             respostaArea.classList.add('hidden');
             loadingArea.classList.remove('hidden');
@@ -885,102 +873,73 @@
                 console.log('📦 Resposta completa:', data);
                 console.log('📊 Fontes:', data.fontes);
                 console.log('============================');
-
+                
                 let respostaTextoFinal = data.resposta || data.message?.content || '';
                 const fontes = data.fontes || [];
-
+                
                 // 🆕 ARMAZENA FONTES GLOBALMENTE
                 fontesGlobal = fontes;
                 
                 console.log(`✅ Total de fontes recebidas: ${fontes.length}`);
-
-                // 🆕 SUBSTITUI **(...)** POR HTML CLICÁVEL - USA texto_contexto!
+                
                 // 🆕 SUBSTITUI **(...)** POR HTML CLICÁVEL - USA ÍNDICE!
                 let countSubstituicoes = 0;
-
+                
                 respostaTextoFinal = respostaTextoFinal.replace(
                     /\*\*\(([^)]+)\)\*\*/g,
                     (match, ref) => {
                         countSubstituicoes++;
                         console.log(`🔍 [${countSubstituicoes}] Processando: "${ref}"`);
-
+                        
                         // Parse da referência: "Deuteronômio 10:12 - NVI"
                         const refParts = ref.match(/^(.+?)\s+(\d+):(\d+(?:-\d+)?)\s*-\s*(NVI|ACF|AA)$/);
-
+                        
                         if (!refParts) {
                             console.warn(`⚠️ Formato não reconhecido: "${ref}"`);
                             return `<span class="verse-ref-plain">${ref}</span>`;
                         }
-
+                        
                         const [_, livro, cap, vers, trad] = refParts;
-                        const refCompleta = `${livro} ${cap}:${vers}`;
-
-                        console.log(`   📖 Buscando: ${refCompleta} (${trad})`);
+                        
                         // 🆕 PARSE DO VERSÍCULO (pode ser range como "10-12")
                         const versiculoNumero = parseInt(vers.split('-')[0]); // Pega primeiro número
-
-                        const fonte = fontes.find(f => 
-                            f.referencia === refCompleta && f.traducao === trad
-                        );
+                        
                         console.log(`   📖 Buscando: ${livro} ${cap}:${versiculoNumero} (${trad})`);
-
-                        if (fonte && fonte.texto_contexto) {
-                            console.log(`   ✅ ENCONTRADO! Contexto: ${fonte.texto_contexto.length} chars`);
-                            
-                            const textoEscapado = fonte.texto_contexto
-                                .replace(/"/g, '&quot;')
-                                .replace(/'/g, '&#39;')
-                                .replace(/\n/g, ' ');
+                        
                         // 🆕 USA MATCHING FLEXÍVEL
                         const resultado = encontrarFonteFlexivel(livro, parseInt(cap), versiculoNumero, trad, fontes);
                         
                         if (resultado) {
                             console.log(`   ✅ ENCONTRADO! Índice: ${resultado.indice}`);
-
-                            return `<span class="verse-ref" data-ref="${refCompleta}" data-trad="${trad}" data-contexto="${textoEscapado}">${ref}</span>`;
+                            
                             // 🆕 GUARDA APENAS O ÍNDICE (não o texto!)
                             return `<span class="verse-ref" data-indice="${resultado.indice}">${ref}</span>`;
                         } else {
-                            console.warn(`   ⚠️ NÃO ENCONTRADO nas fontes`);
                             console.warn(`   ⚠️ NÃO ENCONTRADO`);
                             return `<span class="verse-ref-plain">${ref}</span>`;
                         }
                     }
                 );
-
+                
                 console.log(`🎯 Total de substituições: ${countSubstituicoes}`);
-
+                
                 // Converte markdown para HTML
                 let htmlContent = marked.parse(respostaTextoFinal);
-
+                
                 // Limpa formatação problemática
                 htmlContent = limparFormatacaoProblematica(htmlContent);
-
+                
                 respostaTexto.innerHTML = htmlContent;
-
-                // 🆕 Adiciona evento de clique nas referências (usa data-contexto!)
+                
                 // 🆕 ADICIONA EVENTO DE CLIQUE NAS REFERÊNCIAS (USA ÍNDICE!)
                 const verseRefs = respostaTexto.querySelectorAll('.verse-ref');
                 console.log(`🖱️ Total de .verse-ref encontrados: ${verseRefs.length}`);
-
+                
                 verseRefs.forEach((ref, idx) => {
-                    console.log(`   [${idx+1}] Adicionando click em: ${ref.dataset.ref}`);
                     const indice = parseInt(ref.dataset.indice);
                     console.log(`   [${idx+1}] Adicionando click - índice: ${indice}`);
-
+                    
                     ref.addEventListener('click', () => {
-                        const referencia = ref.dataset.ref;
-                        const traducao = ref.dataset.trad;
-                        const contexto = ref.dataset.contexto; // 🆕 Usa contexto!
-                        
-                        console.log(`🖱️ CLIQUE! Modal: ${referencia}`);
-                        console.log(`   Contexto: ${contexto?.length || 0} chars`);
-                        
-                        if (referencia && contexto) {
-                            openVerseModal(referencia, traducao, contexto);
-                        } else {
-                            console.error('❌ Dados incompletos:', {referencia, traducao, contexto: contexto?.substring(0, 30)});
-                        }
                         console.log(`🖱️ CLIQUE! Abrindo modal com índice: ${indice}`);
                         openVerseModal(indice);
                     });
@@ -998,17 +957,17 @@
                 }
 
                 respostaTimestamp.textContent = new Date().toLocaleString('pt-BR');
-
+                
                 loadingArea.classList.add('hidden');
                 respostaArea.classList.remove('hidden');
-
+                
                 setTimeout(() => {
                     respostaArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }, 300);
-
+                
             } catch (err) {
                 console.error('❌ ERRO:', err);
-
+                
                 loadingArea.classList.add('hidden');
                 errorArea.classList.remove('hidden');
                 errorMessage.textContent = err.message || 'Erro ao conectar com o servidor. Tente novamente.';
