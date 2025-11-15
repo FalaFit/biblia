@@ -567,6 +567,11 @@
         };
 
         // ==========================================
+        // 🆕 VARIÁVEL GLOBAL PARA ARMAZENAR FONTES
+        // ==========================================
+        let fontesGlobal = [];
+
+        // ==========================================
         // ELEMENTOS DO DOM
         // ==========================================
         const loginScreen = document.getElementById('loginScreen');
@@ -679,19 +684,63 @@
         }
 
         // ==========================================
+        // 🆕 FUNÇÃO DE MATCHING INTELIGENTE
+        // ==========================================
+        function encontrarFonteFlexivel(livro, capitulo, versiculo, traducao, fontes) {
+            console.log(`🔍 Buscando: ${livro} ${capitulo}:${versiculo} (${traducao})`);
+            
+            // Normaliza o livro para comparação
+            const livroNormalizado = livro.toLowerCase().trim();
+            
+            for (let i = 0; i < fontes.length; i++) {
+                const fonte = fontes[i];
+                
+                // Normaliza o livro da fonte
+                const livroFonteNormalizado = (fonte.livro || '').toLowerCase().trim();
+                
+                // Verifica se é o mesmo livro, capítulo e tradução
+                if (
+                    livroFonteNormalizado === livroNormalizado &&
+                    fonte.capitulo === capitulo &&
+                    fonte.traducao === traducao
+                ) {
+                    // 🆕 VERIFICA SE O VERSÍCULO ESTÁ NO RANGE
+                    const versInicio = fonte.versiculo_inicio || fonte.versiculo;
+                    const versFim = fonte.versiculo_fim || fonte.versiculo;
+                    
+                    if (versiculo >= versInicio && versiculo <= versFim) {
+                        console.log(`   ✅ ENCONTRADO! Fonte #${i}: ${fonte.referencia}`);
+                        console.log(`   Range: ${versInicio}-${versFim}, buscado: ${versiculo}`);
+                        return { fonte, indice: i };
+                    }
+                }
+            }
+            
+            console.warn(`   ⚠️ NÃO ENCONTRADO nas ${fontes.length} fontes`);
+            return null;
+        }
+
+        // ==========================================
         // 🆕 MODAL DE VERSÍCULO MELHORADO COM CONTEXTO
         // ==========================================
-        function openVerseModal(referencia, traducao, textoContexto) {
-            console.log('');
-            console.log('📖 ===== MODAL DEBUG =====');
-            console.log('Referência:', referencia);
-            console.log('Tradução:', traducao);
-            console.log('Tamanho do contexto:', textoContexto?.length || 0);
-            console.log('==========================');
-            console.log('');
+        function openVerseModal(indice) {
+            console.log('📖 ===== ABRINDO MODAL =====');
+            console.log('Índice da fonte:', indice);
             
-            verseModalTitle.textContent = referencia;
-            verseModalSubtitle.textContent = `${traducao} • Contexto completo do capítulo`;
+            const fonte = fontesGlobal[indice];
+            
+            if (!fonte) {
+                console.error('❌ Fonte não encontrada no índice', indice);
+                return;
+            }
+            
+            console.log('Fonte encontrada:', fonte.referencia);
+            console.log('Contexto:', fonte.texto_contexto?.length || 0, 'chars');
+            
+            verseModalTitle.textContent = fonte.referencia;
+            verseModalSubtitle.textContent = `${fonte.traducao} • Contexto completo do capítulo`;
+            
+            const textoContexto = fonte.texto_contexto || fonte.texto || '';
             
             // Formata o texto com quebras de parágrafo
             let textoFormatado = textoContexto
@@ -712,7 +761,7 @@
                         <div class="text-sm text-amber-200">
                             <p class="font-bold mb-2 text-base">📖 Contexto Bíblico Completo</p>
                             <p class="text-amber-300/90 leading-relaxed">
-                                Este trecho apresenta <strong class="text-amber-100">${referencia}</strong> 
+                                Este trecho apresenta <strong class="text-amber-100">${fonte.referencia}</strong> 
                                 juntamente com os versículos adjacentes do capítulo, 
                                 fornecendo o contexto narrativo completo para melhor compreensão.
                             </p>
@@ -736,7 +785,7 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
-                            <span>${textoContexto?.length || 0} caracteres</span>
+                            <span>${textoContexto.length} caracteres</span>
                         </div>
                     </div>
                 </div>
@@ -787,6 +836,7 @@
             exemplosArea.classList.remove('hidden');
             perguntaInput.value = '';
             perguntaInput.focus();
+            fontesGlobal = [];
         });
 
         async function fazerPergunta() {
@@ -827,9 +877,12 @@
                 let respostaTextoFinal = data.resposta || data.message?.content || '';
                 const fontes = data.fontes || [];
                 
+                // 🆕 ARMAZENA FONTES GLOBALMENTE
+                fontesGlobal = fontes;
+                
                 console.log(`✅ Total de fontes recebidas: ${fontes.length}`);
                 
-                // 🆕 SUBSTITUI **(...)** POR HTML CLICÁVEL - USA texto_contexto!
+                // 🆕 SUBSTITUI **(...)** POR HTML CLICÁVEL - USA ÍNDICE!
                 let countSubstituicoes = 0;
                 
                 respostaTextoFinal = respostaTextoFinal.replace(
@@ -838,6 +891,7 @@
                         countSubstituicoes++;
                         console.log(`🔍 [${countSubstituicoes}] Processando: "${ref}"`);
                         
+                        // Parse da referência: "Deuteronômio 10:12 - NVI"
                         const refParts = ref.match(/^(.+?)\s+(\d+):(\d+(?:-\d+)?)\s*-\s*(NVI|ACF|AA)$/);
                         
                         if (!refParts) {
@@ -846,25 +900,22 @@
                         }
                         
                         const [_, livro, cap, vers, trad] = refParts;
-                        const refCompleta = `${livro} ${cap}:${vers}`;
                         
-                        console.log(`   📖 Buscando: ${refCompleta} (${trad})`);
+                        // 🆕 PARSE DO VERSÍCULO (pode ser range como "10-12")
+                        const versiculoNumero = parseInt(vers.split('-')[0]); // Pega primeiro número
                         
-                        const fonte = fontes.find(f => 
-                            f.referencia === refCompleta && f.traducao === trad
-                        );
+                        console.log(`   📖 Buscando: ${livro} ${cap}:${versiculoNumero} (${trad})`);
                         
-                        if (fonte && fonte.texto_contexto) {
-                            console.log(`   ✅ ENCONTRADO! Contexto: ${fonte.texto_contexto.length} chars`);
+                        // 🆕 USA MATCHING FLEXÍVEL
+                        const resultado = encontrarFonteFlexivel(livro, parseInt(cap), versiculoNumero, trad, fontes);
+                        
+                        if (resultado) {
+                            console.log(`   ✅ ENCONTRADO! Índice: ${resultado.indice}`);
                             
-                            const textoEscapado = fonte.texto_contexto
-                                .replace(/"/g, '&quot;')
-                                .replace(/'/g, '&#39;')
-                                .replace(/\n/g, ' ');
-                            
-                            return `<span class="verse-ref" data-ref="${refCompleta}" data-trad="${trad}" data-contexto="${textoEscapado}">${ref}</span>`;
+                            // 🆕 GUARDA APENAS O ÍNDICE (não o texto!)
+                            return `<span class="verse-ref" data-indice="${resultado.indice}">${ref}</span>`;
                         } else {
-                            console.warn(`   ⚠️ NÃO ENCONTRADO nas fontes`);
+                            console.warn(`   ⚠️ NÃO ENCONTRADO`);
                             return `<span class="verse-ref-plain">${ref}</span>`;
                         }
                     }
@@ -880,26 +931,17 @@
                 
                 respostaTexto.innerHTML = htmlContent;
                 
-                // 🆕 Adiciona evento de clique nas referências (usa data-contexto!)
+                // 🆕 ADICIONA EVENTO DE CLIQUE NAS REFERÊNCIAS (USA ÍNDICE!)
                 const verseRefs = respostaTexto.querySelectorAll('.verse-ref');
                 console.log(`🖱️ Total de .verse-ref encontrados: ${verseRefs.length}`);
                 
                 verseRefs.forEach((ref, idx) => {
-                    console.log(`   [${idx+1}] Adicionando click em: ${ref.dataset.ref}`);
+                    const indice = parseInt(ref.dataset.indice);
+                    console.log(`   [${idx+1}] Adicionando click - índice: ${indice}`);
                     
                     ref.addEventListener('click', () => {
-                        const referencia = ref.dataset.ref;
-                        const traducao = ref.dataset.trad;
-                        const contexto = ref.dataset.contexto; // 🆕 Usa contexto!
-                        
-                        console.log(`🖱️ CLIQUE! Modal: ${referencia}`);
-                        console.log(`   Contexto: ${contexto?.length || 0} chars`);
-                        
-                        if (referencia && contexto) {
-                            openVerseModal(referencia, traducao, contexto);
-                        } else {
-                            console.error('❌ Dados incompletos:', {referencia, traducao, contexto: contexto?.substring(0, 30)});
-                        }
+                        console.log(`🖱️ CLIQUE! Abrindo modal com índice: ${indice}`);
+                        openVerseModal(indice);
                     });
                 });
 
