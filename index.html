@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assistente Bíblico Inteligente - Consultoria Espiritual com IA</title>
+    <title>Assistente Bíblico - DEBUG MODE</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
@@ -103,7 +103,7 @@
             margin: 2.5rem 0;
         }
 
-        /* 🆕 Referências bíblicas CLICÁVEIS em destaque */
+        /* Referências bíblicas CLICÁVEIS */
         .verse-ref {
             display: inline-block;
             background: linear-gradient(135deg, rgba(251, 191, 36, 0.25) 0%, rgba(245, 158, 11, 0.25) 100%);
@@ -160,7 +160,7 @@
             font-weight: 600;
         }
 
-        /* 🆕 Modal de versículo MELHORADO */
+        /* Modal de versículo */
         .verse-modal {
             position: fixed;
             top: 0;
@@ -196,25 +196,37 @@
             animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* 🆕 Destaque do versículo específico no contexto */
-        .verse-highlight {
-            background: rgba(251, 191, 36, 0.15);
-            border-left: 4px solid #fbbf24;
-            padding: 12px 16px;
-            margin: 12px 0;
-            border-radius: 8px;
-            font-weight: 600;
-            position: relative;
+        /* 🆕 PAINEL DE DEBUG */
+        .debug-panel {
+            background: #0f172a;
+            border: 2px solid #ef4444;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #fbbf24;
+            max-height: 400px;
+            overflow-y: auto;
         }
 
-        .verse-highlight::before {
-            content: "→";
-            color: #fbbf24;
-            font-size: 1.5em;
-            position: absolute;
-            left: -8px;
-            top: 50%;
-            transform: translateY(-50%);
+        .debug-title {
+            color: #ef4444;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+
+        .debug-ok {
+            color: #10b981;
+        }
+
+        .debug-warn {
+            color: #f59e0b;
+        }
+
+        .debug-error {
+            color: #ef4444;
         }
 
         /* Scrollbar customizada */
@@ -240,73 +252,8 @@
 </head>
 <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen">
     
-    <!-- ==================== TELA DE LOGIN ==================== -->
-    <div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
-        <div class="absolute inset-0 overflow-hidden pointer-events-none">
-            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl"></div>
-        </div>
-
-        <div class="w-full max-w-md relative animate-fade-in">
-            <div class="text-center mb-8">
-                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl shadow-2xl glow-animation mb-6">
-                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                    </svg>
-                </div>
-                <h1 class="text-3xl font-bold text-white mb-2">Assistente Bíblico Inteligente</h1>
-                <p class="text-slate-400">Acesso seguro à consultoria espiritual</p>
-            </div>
-
-            <div id="loginCard" class="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 shadow-2xl overflow-hidden">
-                <div class="p-8">
-                    <form id="loginForm" class="space-y-6">
-                        <div>
-                            <label class="block text-sm font-medium text-slate-300 mb-2">Usuário</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
-                                    </svg>
-                                </div>
-                                <input type="text" id="username" class="w-full bg-slate-900/50 text-white placeholder-slate-500 rounded-xl border border-slate-600 pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all" placeholder="Digite seu usuário" required/>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-slate-300 mb-2">Senha</label>
-                            <div class="relative">
-                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                                    <svg class="h-5 w-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
-                                    </svg>
-                                </div>
-                                <input type="password" id="password" class="w-full bg-slate-900/50 text-white placeholder-slate-500 rounded-xl border border-slate-600 pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all" placeholder="Digite sua senha" required/>
-                            </div>
-                        </div>
-
-                        <div id="loginError" class="hidden bg-red-500/10 border border-red-500/50 rounded-xl p-3 flex items-center gap-2">
-                            <svg class="w-5 h-5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <p class="text-sm text-red-300">Usuário ou senha incorretos</p>
-                        </div>
-
-                        <button type="submit" id="loginButton" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-amber-500/50">
-                            Entrar no Sistema
-                        </button>
-                    </form>
-                </div>
-
-                <div class="bg-slate-900/30 px-8 py-4 border-t border-slate-700">
-                    <p class="text-xs text-slate-500 text-center">🔒 Sessão expira em 2 horas de inatividade</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- ==================== APLICAÇÃO PRINCIPAL ==================== -->
-    <div id="mainApp" class="hidden min-h-screen">
+    <!-- APLICAÇÃO PRINCIPAL (Login removido para debug) -->
+    <div id="mainApp" class="min-h-screen">
         
         <!-- Header -->
         <header class="bg-gradient-to-r from-amber-600/10 via-amber-500/10 to-amber-600/10 backdrop-blur-sm border-b border-amber-500/20 sticky top-0 z-50">
@@ -319,17 +266,13 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
                                 </svg>
                             </div>
-                            <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-slate-900 animate-pulse"></div>
+                            <div class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 rounded-full border-2 border-slate-900 animate-pulse" title="DEBUG MODE"></div>
                         </div>
                         <div>
-                            <h1 class="text-2xl font-bold gradient-text">Assistente Bíblico Inteligente</h1>
-                            <p class="text-sm text-amber-200/70">Consultoria espiritual com tecnologia IA</p>
+                            <h1 class="text-2xl font-bold gradient-text">Assistente Bíblico - DEBUG MODE</h1>
+                            <p class="text-sm text-red-400">🔍 Modo diagnóstico ativado</p>
                         </div>
                     </div>
-                    
-                    <button id="logoutButton" class="px-4 py-2 bg-slate-700/50 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors text-sm">
-                        Sair
-                    </button>
                 </div>
             </div>
         </header>
@@ -337,31 +280,6 @@
         <!-- Main Content -->
         <main class="max-w-6xl mx-auto px-6 py-8">
             
-            <!-- Hero Section -->
-            <div class="text-center mb-12 animate-fade-in">
-                <div class="inline-block mb-6">
-                    <div class="relative">
-                        <svg class="w-24 h-24 text-amber-500 float-animation" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                        </svg>
-                        <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full">
-                            IA
-                        </div>
-                    </div>
-                </div>
-                
-                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
-                    Tire suas dúvidas com a
-                    <span class="gradient-text">Palavra de Deus</span>
-                </h2>
-                <p class="text-lg text-slate-300 max-w-2xl mx-auto mb-2">
-                    Consulte as Escrituras Sagradas de forma inteligente. Pergunte sobre qualquer tema bíblico e receba respostas fundamentadas com citações completas.
-                </p>
-                <p class="text-sm text-amber-400/70">
-                    ✨ Powered by GPT-4o • 📖 12.000 versículos indexados • 🌍 3 traduções em português
-                </p>
-            </div>
-
             <!-- Input de Pergunta -->
             <div class="bg-gradient-to-br from-slate-800/50 to-slate-700/30 backdrop-blur-xl rounded-3xl border-2 border-amber-500/20 p-8 mb-8 shadow-2xl animate-fade-in">
                 <label class="block text-lg font-semibold text-amber-100 mb-4 flex items-center gap-2">
@@ -374,10 +292,10 @@
                 <div class="flex flex-col md:flex-row gap-4">
                     <textarea 
                         id="perguntaInput" 
-                        placeholder="Ex: O que a Bíblia diz sobre fé? ou Quem foi Abraão?" 
+                        placeholder="Ex: Quem foi Moisés?" 
                         class="flex-1 bg-slate-900/70 text-white placeholder-slate-500 rounded-2xl border-2 border-slate-600 focus:border-amber-500 px-6 py-4 focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-none transition-all shadow-inner"
                         rows="3"
-                    ></textarea>
+                    >Quem foi Moisés?</textarea>
                     
                     <button 
                         id="consultarButton" 
@@ -389,36 +307,12 @@
                         Consultar
                     </button>
                 </div>
+            </div>
 
-                <!-- Exemplos -->
-                <div id="exemplosArea" class="mt-6">
-                    <p class="text-sm text-slate-400 mb-3 flex items-center gap-2">
-                        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                        </svg>
-                        Exemplos de perguntas:
-                    </p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
-                        <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
-                            Onde Jesus nasceu?
-                        </button>
-                        <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
-                            Quem foi Abraão?
-                        </button>
-                        <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
-                            A história de José do Egito
-                        </button>
-                        <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
-                            Os 10 mandamentos
-                        </button>
-                        <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
-                            O que Deus disse sobre amar o próximo?
-                        </button>
-                        <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
-                            História de Moisés
-                        </button>
-                    </div>
-                </div>
+            <!-- 🆕 PAINEL DE DEBUG -->
+            <div id="debugPanel" class="hidden debug-panel">
+                <div class="debug-title">🔍 DEBUG: Análise das Fontes</div>
+                <div id="debugContent"></div>
             </div>
 
             <!-- Error Area -->
@@ -441,20 +335,9 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                        </svg>
-                    </div>
                 </div>
                 <p class="text-white text-xl font-semibold mb-2">Consultando as Escrituras...</p>
-                <p class="text-slate-400">Buscando os versículos mais relevantes para sua pergunta</p>
-                <div class="mt-6 flex items-center justify-center gap-2 text-sm text-amber-400">
-                    <svg class="w-4 h-4 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
-                    </svg>
-                    <span>Powered by IA</span>
-                </div>
+                <p class="text-slate-400">Buscando os versículos mais relevantes</p>
             </div>
 
             <!-- Resposta Area -->
@@ -478,49 +361,15 @@
 
                 <div class="p-8">
                     <div id="respostaTexto" class="text-slate-100 text-lg prose prose-invert max-w-none"></div>
-                    
-                    <!-- Livros Citados -->
-                    <div id="livrosCitadosArea" class="mt-8 p-6 bg-amber-500/5 border border-amber-500/20 rounded-2xl">
-                        <p class="text-amber-400 font-semibold mb-3 flex items-center gap-2">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-                            </svg>
-                            Livros da Bíblia consultados:
-                        </p>
-                        <div id="livrosCitadosList" class="flex flex-wrap gap-2"></div>
-                    </div>
-                    
-                    <div class="mt-6 pt-6 border-t border-slate-700/50 flex items-center justify-between text-sm text-slate-500">
-                        <span class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            📖 Clique nas referências douradas para ver o contexto completo do capítulo
-                        </span>
-                        <span id="respostaTimestamp"></span>
-                    </div>
                 </div>
             </div>
 
         </main>
-
-        <!-- Footer -->
-        <footer class="max-w-6xl mx-auto px-6 py-8 mt-12 border-t border-slate-700/50">
-            <div class="text-center">
-                <p class="text-slate-400 text-sm mb-2">
-                    🙏 Assistente Bíblico Inteligente • Desenvolvido com ❤️ para a glória de Deus
-                </p>
-                <p class="text-slate-500 text-xs">
-                    Tecnologia: GPT-4o + Pinecone + n8n • Traduções: NVI, ACF, AA
-                </p>
-            </div>
-        </footer>
     </div>
 
-    <!-- ==================== 🆕 MODAL DE VERSÍCULO MELHORADO ==================== -->
+    <!-- MODAL DE VERSÍCULO -->
     <div id="verseModal" class="verse-modal hidden">
         <div class="verse-modal-content">
-            <!-- Header Melhorado -->
             <div class="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 p-6 flex items-center justify-between">
                 <div class="flex-1">
                     <h3 id="verseModalTitle" class="text-2xl font-bold text-white mb-1 flex items-center gap-2">
@@ -538,61 +387,33 @@
                 </button>
             </div>
             
-            <!-- Conteúdo -->
             <div class="p-8">
                 <div id="verseModalContent" class="text-slate-100 text-lg leading-relaxed"></div>
             </div>
 
-            <!-- Footer -->
             <div class="bg-slate-900/50 px-8 py-4 text-center border-t border-amber-500/20">
-                <p class="text-sm text-slate-400 flex items-center justify-center gap-2">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                    </svg>
-                    📖 Clique fora ou pressione ESC para fechar
-                </p>
+                <p class="text-sm text-slate-400">📖 Clique fora ou pressione ESC para fechar</p>
             </div>
         </div>
     </div>
 
     <script>
-        // ==========================================
-        // CONFIGURAÇÕES
-        // ==========================================
         const CONFIG = {
-            username: 'admin',
-            password: 'mvpmvp',
-            webhookUrl: 'https://planejamentocomercialtvx.app.n8n.cloud/webhook/biblia-query',
-            sessionTimeout: 2 * 60 * 60 * 1000
+            webhookUrl: 'https://planejamentocomercialtvx.app.n8n.cloud/webhook/biblia-query'
         };
 
-        // ==========================================
-        // 🆕 VARIÁVEL GLOBAL PARA ARMAZENAR FONTES
-        // ==========================================
         let fontesGlobal = [];
-
-        // ==========================================
-        // ELEMENTOS DO DOM
-        // ==========================================
-        const loginScreen = document.getElementById('loginScreen');
-        const mainApp = document.getElementById('mainApp');
-        const loginForm = document.getElementById('loginForm');
-        const loginCard = document.getElementById('loginCard');
-        const loginError = document.getElementById('loginError');
-        const logoutButton = document.getElementById('logoutButton');
 
         const perguntaInput = document.getElementById('perguntaInput');
         const consultarButton = document.getElementById('consultarButton');
-        const exemplosArea = document.getElementById('exemplosArea');
         const errorArea = document.getElementById('errorArea');
         const errorMessage = document.getElementById('errorMessage');
         const loadingArea = document.getElementById('loadingArea');
         const respostaArea = document.getElementById('respostaArea');
         const respostaTexto = document.getElementById('respostaTexto');
-        const respostaTimestamp = document.getElementById('respostaTimestamp');
-        const livrosCitadosArea = document.getElementById('livrosCitadosArea');
-        const livrosCitadosList = document.getElementById('livrosCitadosList');
         const novaConsultaBtn = document.getElementById('novaConsultaBtn');
+        const debugPanel = document.getElementById('debugPanel');
+        const debugContent = document.getElementById('debugContent');
 
         const verseModal = document.getElementById('verseModal');
         const verseModalTitle = document.getElementById('verseModalTitle');
@@ -600,111 +421,92 @@
         const verseModalContent = document.getElementById('verseModalContent');
         const closeVerseBtn = document.getElementById('closeVerseBtn');
 
-        // ==========================================
-        // AUTENTICAÇÃO
-        // ==========================================
-        function checkAuth() {
-            const authDataStr = localStorage.getItem('authBibliaData');
+        // 🆕 FUNÇÃO DE DEBUG DETALHADA
+        function mostrarDebugFontes(fontes) {
+            let html = '<div style="margin-bottom: 12px;">Total de fontes: <span class="debug-ok">' + fontes.length + '</span></div>';
             
-            if (authDataStr) {
-                try {
-                    const authData = JSON.parse(authDataStr);
-                    const now = Date.now();
-                    
-                    if (authData.expiresAt && now > authData.expiresAt) {
-                        localStorage.removeItem('authBibliaData');
-                        showLogin();
-                    } else if (authData.authenticated) {
-                        showMainApp();
-                    } else {
-                        showLogin();
-                    }
-                } catch (e) {
-                    localStorage.removeItem('authBibliaData');
-                    showLogin();
+            fontes.forEach((fonte, idx) => {
+                const temContexto = fonte.texto_contexto && fonte.texto_contexto.length > 0;
+                const tamanhoTexto = fonte.texto?.length || 0;
+                const tamanhoContexto = fonte.texto_contexto?.length || 0;
+                const isContextoMaior = tamanhoContexto > tamanhoTexto;
+                
+                html += '<div style="margin: 8px 0; padding: 8px; background: #1e293b; border-left: 3px solid ' + (isContextoMaior ? '#10b981' : '#ef4444') + ';">';
+                html += '<div style="font-weight: bold; margin-bottom: 4px;">Fonte #' + idx + ': ' + (fonte.referencia || 'N/A') + '</div>';
+                html += '<div>• Livro: <span class="debug-ok">' + (fonte.livro || 'N/A') + '</span></div>';
+                html += '<div>• Cap: ' + (fonte.capitulo || 'N/A') + ' | Vers: ' + (fonte.versiculo_inicio || fonte.versiculo || 'N/A');
+                if (fonte.versiculo_fim && fonte.versiculo_fim !== fonte.versiculo_inicio) {
+                    html += '-' + fonte.versiculo_fim;
                 }
+                html += ' | Trad: ' + (fonte.traducao || 'N/A') + '</div>';
+                html += '<div>• <span class="debug-warn">texto</span>: ' + tamanhoTexto + ' chars</div>';
+                html += '<div>• <span class="' + (temContexto ? 'debug-ok' : 'debug-error') + '">texto_contexto</span>: ';
+                
+                if (temContexto) {
+                    html += tamanhoContexto + ' chars ';
+                    if (isContextoMaior) {
+                        html += '<span class="debug-ok">✓ MAIOR</span>';
+                    } else {
+                        html += '<span class="debug-warn">⚠ IGUAL AO TEXTO</span>';
+                    }
+                } else {
+                    html += '<span class="debug-error">❌ AUSENTE</span>';
+                }
+                html += '</div>';
+                
+                if (temContexto && tamanhoContexto > 0) {
+                    html += '<div style="margin-top: 4px; font-size: 10px; color: #64748b;">Preview: ' + 
+                            (fonte.texto_contexto.substring(0, 100) + '...') + '</div>';
+                }
+                
+                html += '</div>';
+            });
+            
+            const fontesComContextoCompleto = fontes.filter(f => 
+                f.texto_contexto && f.texto_contexto.length > (f.texto?.length || 0) * 1.2
+            );
+            const percentual = (fontesComContextoCompleto.length / fontes.length * 100).toFixed(1);
+            
+            html += '<div style="margin-top: 16px; padding: 12px; background: #1e293b; border: 2px solid ' + 
+                    (parseFloat(percentual) >= 80 ? '#10b981' : '#ef4444') + ';">';
+            html += '<div class="debug-title">📊 Resumo:</div>';
+            html += '<div>Fontes com contexto expandido: <span class="' + 
+                    (parseFloat(percentual) >= 80 ? 'debug-ok' : 'debug-error') + '">' + 
+                    fontesComContextoCompleto.length + '/' + fontes.length + ' (' + percentual + '%)</span></div>';
+            
+            if (parseFloat(percentual) < 80) {
+                html += '<div class="debug-error" style="margin-top: 8px;">⚠️ PROBLEMA: Menos de 80% das fontes têm contexto completo!</div>';
+                html += '<div class="debug-error">→ Verifique se o código do Build Context foi aplicado no n8n</div>';
             } else {
-                showLogin();
+                html += '<div class="debug-ok" style="margin-top: 8px;">✅ OK: Contexto completo presente na maioria das fontes</div>';
             }
+            html += '</div>';
+            
+            debugContent.innerHTML = html;
+            debugPanel.classList.remove('hidden');
         }
 
-        function showLogin() {
-            loginScreen.classList.remove('hidden');
-            mainApp.classList.add('hidden');
-        }
-
-        function showMainApp() {
-            loginScreen.classList.add('hidden');
-            mainApp.classList.remove('hidden');
-        }
-
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
-            
-            loginError.classList.add('hidden');
-            
-            if (username === CONFIG.username && password === CONFIG.password) {
-                const loginData = {
-                    authenticated: true,
-                    timestamp: Date.now(),
-                    expiresAt: Date.now() + CONFIG.sessionTimeout
-                };
-                localStorage.setItem('authBibliaData', JSON.stringify(loginData));
-                showMainApp();
-            } else {
-                loginError.classList.remove('hidden');
-                loginCard.classList.add('animate-shake');
-                setTimeout(() => loginCard.classList.remove('animate-shake'), 500);
-            }
-        });
-
-        logoutButton.addEventListener('click', () => {
-            localStorage.removeItem('authBibliaData');
-            showLogin();
-        });
-
-        // ==========================================
-        // FUNÇÃO DE LIMPEZA DE FORMATAÇÃO
-        // ==========================================
         function limparFormatacaoProblematica(html) {
-            console.log('🧹 Limpando formatação problemática...');
-            
-            // Remove <strong>1.</strong>, <strong>2.</strong>, etc
             html = html.replace(/<strong>(\d+)\.<\/strong>\s*\n/g, '$1.\n');
             html = html.replace(/<strong>(\d+)\.<\/strong>\s*/g, '$1. ');
-            
-            // Remove <strong>**1.</strong> (asteriscos literais)
             html = html.replace(/<strong>\*\*(\d+)\.<\/strong>/g, '$1.');
-            
-            console.log('✅ Limpeza concluída');
             return html;
         }
 
-        // ==========================================
-        // 🆕 FUNÇÃO DE MATCHING INTELIGENTE
-        // ==========================================
         function encontrarFonteFlexivel(livro, capitulo, versiculo, traducao, fontes) {
             console.log(`🔍 Buscando: ${livro} ${capitulo}:${versiculo} (${traducao})`);
             
-            // Normaliza o livro para comparação
             const livroNormalizado = livro.toLowerCase().trim();
             
             for (let i = 0; i < fontes.length; i++) {
                 const fonte = fontes[i];
-                
-                // Normaliza o livro da fonte
                 const livroFonteNormalizado = (fonte.livro || '').toLowerCase().trim();
                 
-                // Verifica se é o mesmo livro, capítulo e tradução
                 if (
                     livroFonteNormalizado === livroNormalizado &&
                     fonte.capitulo === capitulo &&
                     fonte.traducao === traducao
                 ) {
-                    // 🆕 VERIFICA SE O VERSÍCULO ESTÁ NO RANGE
                     const versInicio = fonte.versiculo_inicio || fonte.versiculo;
                     const versFim = fonte.versiculo_fim || fonte.versiculo;
                     
@@ -720,10 +522,8 @@
             return null;
         }
 
-        // ==========================================
-        // 🆕 MODAL DE VERSÍCULO MELHORADO COM CONTEXTO
-        // ==========================================
         function openVerseModal(indice) {
+            console.log('');
             console.log('📖 ===== ABRINDO MODAL =====');
             console.log('Índice da fonte:', indice);
             
@@ -735,57 +535,48 @@
             }
             
             console.log('Fonte encontrada:', fonte.referencia);
-            console.log('Contexto:', fonte.texto_contexto?.length || 0, 'chars');
+            console.log('Campos disponíveis:', Object.keys(fonte));
+            console.log('texto:', fonte.texto?.length || 0, 'chars');
+            console.log('texto_contexto:', fonte.texto_contexto?.length || 0, 'chars');
             
             verseModalTitle.textContent = fonte.referencia;
             verseModalSubtitle.textContent = `${fonte.traducao} • Contexto completo do capítulo`;
             
+            // 🆕 PRIORIZA texto_contexto, com fallback
             const textoContexto = fonte.texto_contexto || fonte.texto || '';
             
-            // Formata o texto com quebras de parágrafo
+            console.log('Texto final usado:', textoContexto.length, 'chars');
+            console.log('Preview:', textoContexto.substring(0, 100) + '...');
+            console.log('============================');
+            console.log('');
+            
             let textoFormatado = textoContexto
                 .replace(/\n\n+/g, '</p><p class="mb-4 text-slate-100">')
                 .replace(/\n/g, '<br>');
             
-            // Envolve em parágrafos
             if (!textoFormatado.includes('<p')) {
                 textoFormatado = `<p class="mb-4 text-slate-100">${textoFormatado}</p>`;
             }
             
             verseModalContent.innerHTML = `
                 <div class="verse-context">
-                    <div class="bg-amber-500/10 border-2 border-amber-500/30 rounded-xl p-4 mb-6 flex items-start gap-3">
-                        <svg class="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <div class="text-sm text-amber-200">
-                            <p class="font-bold mb-2 text-base">📖 Contexto Bíblico Completo</p>
-                            <p class="text-amber-300/90 leading-relaxed">
-                                Este trecho apresenta <strong class="text-amber-100">${fonte.referencia}</strong> 
-                                juntamente com os versículos adjacentes do capítulo, 
-                                fornecendo o contexto narrativo completo para melhor compreensão.
-                            </p>
-                        </div>
+                    <div class="bg-amber-500/10 border-2 border-amber-500/30 rounded-xl p-4 mb-6">
+                        <p class="font-bold mb-2 text-amber-100">📖 Contexto Bíblico</p>
+                        <p class="text-sm text-amber-300/90">
+                            <strong>${fonte.referencia}</strong> com versículos adjacentes
+                        </p>
                     </div>
                     
-                    <div class="verse-text bg-slate-900/60 rounded-xl p-6 border-2 border-amber-500/20 shadow-inner">
+                    <div class="verse-text bg-slate-900/60 rounded-xl p-6 border-2 border-amber-500/20">
                         <blockquote class="border-l-4 border-amber-500 pl-6 italic leading-relaxed text-slate-50">
                             ${textoFormatado}
                         </blockquote>
                     </div>
                     
-                    <div class="mt-6 pt-4 border-t border-slate-700/50 grid grid-cols-2 gap-4 text-xs text-slate-400">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                            </svg>
-                            <span>Trecho das Escrituras Sagradas</span>
-                        </div>
-                        <div class="text-right flex items-center justify-end gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            <span>${textoContexto.length} caracteres</span>
+                    <div class="mt-6 pt-4 border-t border-slate-700/50 text-xs text-slate-400">
+                        <div>📊 Caracteres: ${textoContexto.length}</div>
+                        <div class="${textoContexto.length > 200 ? 'debug-ok' : 'debug-error'}">
+                            ${textoContexto.length > 200 ? '✅ Contexto completo' : '⚠️ Contexto incompleto (esperado ~800 chars)'}
                         </div>
                     </div>
                 </div>
@@ -801,20 +592,15 @@
         }
 
         closeVerseBtn.addEventListener('click', closeVerseModal);
-        
         verseModal.addEventListener('click', (e) => {
             if (e.target === verseModal) closeVerseModal();
         });
-
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && !verseModal.classList.contains('hidden')) {
                 closeVerseModal();
             }
         });
 
-        // ==========================================
-        // CONSULTA
-        // ==========================================
         consultarButton.addEventListener('click', fazerPergunta);
         
         perguntaInput.addEventListener('keydown', (e) => {
@@ -824,16 +610,9 @@
             }
         });
 
-        document.querySelectorAll('.exemplo-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-                perguntaInput.value = btn.textContent.trim();
-                fazerPergunta();
-            });
-        });
-
         novaConsultaBtn.addEventListener('click', () => {
             respostaArea.classList.add('hidden');
-            exemplosArea.classList.remove('hidden');
+            debugPanel.classList.add('hidden');
             perguntaInput.value = '';
             perguntaInput.focus();
             fontesGlobal = [];
@@ -852,8 +631,8 @@
             
             errorArea.classList.add('hidden');
             respostaArea.classList.add('hidden');
+            debugPanel.classList.add('hidden');
             loadingArea.classList.remove('hidden');
-            exemplosArea.classList.add('hidden');
 
             try {
                 const response = await fetch(CONFIG.webhookUrl, {
@@ -877,12 +656,13 @@
                 let respostaTextoFinal = data.resposta || data.message?.content || '';
                 const fontes = data.fontes || [];
                 
-                // 🆕 ARMAZENA FONTES GLOBALMENTE
                 fontesGlobal = fontes;
+                
+                // 🆕 MOSTRA DEBUG DAS FONTES
+                mostrarDebugFontes(fontes);
                 
                 console.log(`✅ Total de fontes recebidas: ${fontes.length}`);
                 
-                // 🆕 SUBSTITUI **(...)** POR HTML CLICÁVEL - USA ÍNDICE!
                 let countSubstituicoes = 0;
                 
                 respostaTextoFinal = respostaTextoFinal.replace(
@@ -891,7 +671,6 @@
                         countSubstituicoes++;
                         console.log(`🔍 [${countSubstituicoes}] Processando: "${ref}"`);
                         
-                        // Parse da referência: "Deuteronômio 10:12 - NVI"
                         const refParts = ref.match(/^(.+?)\s+(\d+):(\d+(?:-\d+)?)\s*-\s*(NVI|ACF|AA)$/);
                         
                         if (!refParts) {
@@ -900,19 +679,14 @@
                         }
                         
                         const [_, livro, cap, vers, trad] = refParts;
-                        
-                        // 🆕 PARSE DO VERSÍCULO (pode ser range como "10-12")
-                        const versiculoNumero = parseInt(vers.split('-')[0]); // Pega primeiro número
+                        const versiculoNumero = parseInt(vers.split('-')[0]);
                         
                         console.log(`   📖 Buscando: ${livro} ${cap}:${versiculoNumero} (${trad})`);
                         
-                        // 🆕 USA MATCHING FLEXÍVEL
                         const resultado = encontrarFonteFlexivel(livro, parseInt(cap), versiculoNumero, trad, fontes);
                         
                         if (resultado) {
                             console.log(`   ✅ ENCONTRADO! Índice: ${resultado.indice}`);
-                            
-                            // 🆕 GUARDA APENAS O ÍNDICE (não o texto!)
                             return `<span class="verse-ref" data-indice="${resultado.indice}">${ref}</span>`;
                         } else {
                             console.warn(`   ⚠️ NÃO ENCONTRADO`);
@@ -923,15 +697,11 @@
                 
                 console.log(`🎯 Total de substituições: ${countSubstituicoes}`);
                 
-                // Converte markdown para HTML
                 let htmlContent = marked.parse(respostaTextoFinal);
-                
-                // Limpa formatação problemática
                 htmlContent = limparFormatacaoProblematica(htmlContent);
                 
                 respostaTexto.innerHTML = htmlContent;
                 
-                // 🆕 ADICIONA EVENTO DE CLIQUE NAS REFERÊNCIAS (USA ÍNDICE!)
                 const verseRefs = respostaTexto.querySelectorAll('.verse-ref');
                 console.log(`🖱️ Total de .verse-ref encontrados: ${verseRefs.length}`);
                 
@@ -945,19 +715,6 @@
                     });
                 });
 
-                // Mostra livros citados
-                if (fontes.length > 0) {
-                    const livrosUnicos = [...new Set(fontes.map(f => f.livro).filter(Boolean))];
-                    livrosCitadosList.innerHTML = livrosUnicos.map(livro => 
-                        `<span class="inline-block bg-amber-500/10 border border-amber-500/30 text-amber-300 px-3 py-1 rounded-lg text-sm font-medium">${livro}</span>`
-                    ).join('');
-                    livrosCitadosArea.classList.remove('hidden');
-                } else {
-                    livrosCitadosArea.classList.add('hidden');
-                }
-
-                respostaTimestamp.textContent = new Date().toLocaleString('pt-BR');
-                
                 loadingArea.classList.add('hidden');
                 respostaArea.classList.remove('hidden');
                 
@@ -970,16 +727,15 @@
                 
                 loadingArea.classList.add('hidden');
                 errorArea.classList.remove('hidden');
-                errorMessage.textContent = err.message || 'Erro ao conectar com o servidor. Tente novamente.';
-                exemplosArea.classList.remove('hidden');
+                errorMessage.textContent = err.message || 'Erro ao conectar com o servidor.';
             } finally {
                 consultarButton.disabled = false;
                 consultarButton.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg> Consultar';
             }
         }
 
-        // Inicialização
-        checkAuth();
+        // Auto-executa a pergunta ao carregar
+        setTimeout(() => fazerPergunta(), 500);
     </script>
 </body>
 </html>
