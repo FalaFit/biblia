@@ -680,91 +680,128 @@
             return null;
         }
 
-        // MODAL DE VERSÍCULO
-        function openVerseModal(indice) {
-            console.log('📖 ===== ABRINDO MODAL =====');
-            console.log('Índice da fonte:', indice);
+       // ==========================================
+// 🆕 MODAL DE VERSÍCULO COM HIGHLIGHT DO VERSÍCULO ESPECÍFICO
+// ==========================================
+function openVerseModal(indice) {
+    console.log('📖 ===== ABRINDO MODAL =====');
+    console.log('Índice da fonte:', indice);
+    
+    const fonte = fontesGlobal[indice];
+    
+    if (!fonte) {
+        console.error('❌ Fonte não encontrada no índice', indice);
+        alert('❌ Erro: Não foi possível carregar o contexto deste versículo.');
+        return;
+    }
+    
+    console.log('✅ Fonte encontrada:', fonte.referencia);
+    
+    verseModalTitle.textContent = fonte.referencia;
+    verseModalSubtitle.textContent = `${fonte.traducao} • Contexto completo do capítulo`;
+    
+    // ✅ Extrai o versículo específico (ou range)
+    const versiculoInicio = fonte.versiculo_inicio;
+    const versiculoFim = fonte.versiculo_fim;
+    
+    // 🎯 3 ESTRATÉGIAS PARA EXTRAIR CONTEXTO
+    let textoParaExibir = '';
+    let versiculosIndividuais = [];
+    
+    // ESTRATÉGIA 1: versiculos_individuais (MELHOR)
+    if (fonte.versiculos_individuais && fonte.versiculos_individuais.length > 0) {
+        versiculosIndividuais = fonte.versiculos_individuais;
+        console.log('   ✅ Usando versiculos_individuais:', versiculosIndividuais.length, 'versículos');
+    }
+    // ESTRATÉGIA 2: texto_contexto
+    else if (fonte.texto_contexto && fonte.texto_contexto.length > 100) {
+        textoParaExibir = fonte.texto_contexto;
+        console.log('   ✅ Usando texto_contexto:', textoParaExibir.length, 'chars');
+    }
+    // ESTRATÉGIA 3: texto simples (FALLBACK)
+    else {
+        textoParaExibir = fonte.texto || 'Contexto não disponível';
+        console.warn('   ⚠️ Usando apenas texto simples:', textoParaExibir.length, 'chars');
+    }
+    
+    // 🎯 MONTA O HTML COM HIGHLIGHT
+    let htmlFinal = '';
+    
+    if (versiculosIndividuais.length > 0) {
+        // Se temos versículos individuais, renderiza cada um com highlight
+        htmlFinal = versiculosIndividuais.map(v => {
+            const numVersiculo = v.versiculo;
+            const isHighlighted = numVersiculo >= versiculoInicio && numVersiculo <= versiculoFim;
             
-            const fonte = fontesGlobal[indice];
-            
-            if (!fonte) {
-                console.error('❌ Fonte não encontrada no índice', indice);
-                alert('❌ Erro: Não foi possível carregar o contexto deste versículo.');
-                return;
-            }
-            
-            console.log('✅ Fonte encontrada:', fonte.referencia);
-            
-            verseModalTitle.textContent = fonte.referencia;
-            verseModalSubtitle.textContent = `${fonte.traducao} • Contexto completo do capítulo`;
-            
-            let textoParaExibir = '';
-            
-            if (fonte.texto_contexto && fonte.texto_contexto.length > 100) {
-                textoParaExibir = fonte.texto_contexto;
-                console.log('   ✅ Usando texto_contexto:', textoParaExibir.length, 'chars');
-            } else if (fonte.versiculos_individuais && fonte.versiculos_individuais.length > 0) {
-                textoParaExibir = fonte.versiculos_individuais
-                    .map(v => `${v.versiculo}. ${v.texto}`)
-                    .join('\n\n');
-                console.log('   ✅ Usando versiculos_individuais:', fonte.versiculos_individuais.length, 'versículos');
+            if (isHighlighted) {
+                // ✨ VERSÍCULO DESTACADO
+                return `
+                    <div class="verse-highlight mb-4">
+                        <span class="text-amber-400 font-bold text-lg">${numVersiculo}.</span>
+                        <span class="text-white font-semibold">${v.texto}</span>
+                    </div>
+                `;
             } else {
-                textoParaExibir = fonte.texto || 'Contexto não disponível';
-                console.warn('   ⚠️ Usando apenas texto simples:', textoParaExibir.length, 'chars');
+                // Versículo normal (contexto)
+                return `
+                    <p class="mb-4 text-slate-300">
+                        <span class="text-slate-500 font-medium">${numVersiculo}.</span>
+                        ${v.texto}
+                    </p>
+                `;
             }
-            
-            let textoFormatado = textoParaExibir
-                .replace(/\n\n+/g, '</p><p class="mb-4 text-slate-100">')
-                .replace(/\n/g, '<br>');
-            
-            if (!textoFormatado.includes('<p')) {
-                textoFormatado = `<p class="mb-4 text-slate-100">${textoFormatado}</p>`;
-            }
-            
-            verseModalContent.innerHTML = `
-                <div class="verse-context">
-                    <div class="bg-amber-500/10 border-2 border-amber-500/30 rounded-xl p-4 mb-6 flex items-start gap-3">
-                        <svg class="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                        </svg>
-                        <div class="text-sm text-amber-200">
-                            <p class="font-bold mb-2 text-base">📖 Contexto Bíblico Completo</p>
-                            <p class="text-amber-300/90 leading-relaxed">
-                                Este trecho apresenta <strong class="text-amber-100">${fonte.referencia}</strong> 
-                                juntamente com os versículos adjacentes do capítulo, 
-                                fornecendo o contexto narrativo completo para melhor compreensão.
-                            </p>
-                        </div>
-                    </div>
-                    
-                    <div class="verse-text bg-slate-900/60 rounded-xl p-6 border-2 border-amber-500/20 shadow-inner">
-                        <blockquote class="border-l-4 border-amber-500 pl-6 italic leading-relaxed text-slate-50">
-                            ${textoFormatado}
-                        </blockquote>
-                    </div>
-                    
-                    <div class="mt-6 pt-4 border-t border-slate-700/50 grid grid-cols-2 gap-4 text-xs text-slate-400">
-                        <div class="flex items-center gap-2">
-                            <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
-                            </svg>
-                            <span>Trecho das Escrituras Sagradas</span>
-                        </div>
-                        <div class="text-right flex items-center justify-end gap-2">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                            </svg>
-                            <span>${textoParaExibir.length} caracteres</span>
-                        </div>
-                    </div>
+        }).join('');
+    } else {
+        // Fallback: usa texto corrido
+        htmlFinal = `<p class="mb-4 text-slate-100">${textoParaExibir}</p>`;
+    }
+    
+    verseModalContent.innerHTML = `
+        <div class="verse-context">
+            <div class="bg-amber-500/10 border-2 border-amber-500/30 rounded-xl p-4 mb-6 flex items-start gap-3">
+                <svg class="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div class="text-sm text-amber-200">
+                    <p class="font-bold mb-2 text-base">📖 Contexto Bíblico Completo</p>
+                    <p class="text-amber-300/90 leading-relaxed">
+                        ${versiculoInicio === versiculoFim 
+                            ? `O versículo <strong class="text-amber-100">${versiculoInicio}</strong> está destacado em amarelo.`
+                            : `Os versículos <strong class="text-amber-100">${versiculoInicio}-${versiculoFim}</strong> estão destacados em amarelo.`
+                        }
+                        Os demais versículos fornecem o contexto narrativo completo do capítulo.
+                    </p>
                 </div>
-            `;
+            </div>
             
-            verseModal.classList.remove('hidden');
-            verseModal.classList.add('show');
+            <div class="verse-text bg-slate-900/60 rounded-xl p-6 border-2 border-amber-500/20 shadow-inner">
+                <blockquote class="border-l-4 border-amber-500 pl-6 leading-relaxed">
+                    ${htmlFinal}
+                </blockquote>
+            </div>
             
-            console.log('✅ Modal aberto com sucesso!');
-        }
+            <div class="mt-6 pt-4 border-t border-slate-700/50 grid grid-cols-2 gap-4 text-xs text-slate-400">
+                <div class="flex items-center gap-2">
+                    <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>Trecho das Escrituras Sagradas</span>
+                </div>
+                <div class="text-right flex items-center justify-end gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                    </svg>
+                    <span>${versiculosIndividuais.length || 1} versículo(s)</span>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    verseModal.classList.remove('hidden');
+    verseModal.classList.add('show');
+    
+    console.log('✅ Modal aberto com sucesso!');
+}
 
         function closeVerseModal() {
             verseModal.classList.add('hidden');
