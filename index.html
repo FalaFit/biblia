@@ -3,932 +3,983 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Consultor Bíblico IA - A Palavra de Deus ao alcance de uma pergunta">
-    <title>Consultor Bíblico IA | Assistente Espiritual Inteligente</title>
-    
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📖%3C/text%3E%3C/svg%3E">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700;900&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+    <title>Assistente Bíblico Inteligente - Consultoria Espiritual com IA</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        :root {
-            --primary: #D4AF37;
-            --primary-dark: #B8941F;
-            --primary-light: #F0D975;
-            --secondary: #3b82f6;
-            --secondary-dark: #1e3a8a;
-            --accent: #FBD33B;
-            --dark: #0f172a;
-            --dark-lighter: #1e293b;
-            --gray: #64748b;
-            --light: #fef3c7;
-            --white: #ffffff;
-            --success: #22c55e;
-            --gradient-primary: linear-gradient(135deg, #D4AF37 0%, #F0D975 100%);
-            --gradient-secondary: linear-gradient(135deg, #3b82f6 0%, #1e3a8a 100%);
-            --gradient-dark: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            --gradient-hero: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
-            --gradient-divine: linear-gradient(135deg, #D4AF37 0%, #F0D975 50%, #FBD33B 100%);
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Open+Sans:wght@400;600;700&display=swap');
         
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            line-height: 1.6;
-            color: var(--dark);
-            overflow-x: hidden;
-            background: var(--dark);
+        body { 
+            font-family: 'Open Sans', sans-serif;
         }
         
         h1, h2, h3, h4, h5, h6 {
             font-family: 'Merriweather', serif;
         }
-
-        /* ========================================
-           INTERFACE PRINCIPAL
-           ======================================== */
         
-        .app-container {
-            min-height: 100vh;
-            background: var(--gradient-hero);
-            position: relative;
-            overflow: hidden;
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-fade-in { 
+            animation: fadeIn 0.6s ease-out; 
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .animate-shake { 
+            animation: shake 0.5s; 
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 30px rgba(234, 179, 8, 0.4); }
+            50% { box-shadow: 0 0 50px rgba(234, 179, 8, 0.6); }
+        }
+        
+        .glow-animation { 
+            animation: glow 3s ease-in-out infinite; 
         }
 
-        .app-container::before {
-            content: '';
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .float-animation { 
+            animation: float 3s ease-in-out infinite; 
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #d97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hidden { display: none; }
+
+        /* Formatação da resposta */
+        #respostaTexto {
+            line-height: 1.8;
+        }
+
+        #respostaTexto p {
+            margin-bottom: 1.25rem;
+        }
+
+        #respostaTexto blockquote {
+            border-left: 4px solid #fbbf24;
+            padding-left: 1.25rem;
+            margin: 1.5rem 0;
+            font-style: italic;
+            color: #fef3c7;
+            background: rgba(251, 191, 36, 0.05);
+            padding: 1rem 1.25rem;
+            border-radius: 0.5rem;
+        }
+
+        #respostaTexto strong {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        #respostaTexto ul, #respostaTexto ol {
+            margin: 1.25rem 0;
+            padding-left: 1.75rem;
+        }
+
+        #respostaTexto li {
+            margin-bottom: 0.75rem;
+        }
+
+        #respostaTexto hr {
+            border: none;
+            border-top: 2px solid rgba(251, 191, 36, 0.2);
+            margin: 2.5rem 0;
+        }
+
+        /* 🆕 Referências bíblicas CLICÁVEIS em destaque */
+        .verse-ref {
+            display: inline-block;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.25) 0%, rgba(245, 158, 11, 0.25) 100%);
+            border: 2px solid rgba(251, 191, 36, 0.6);
+            padding: 4px 12px;
+            border-radius: 10px;
+            font-weight: 700;
+            color: #fbbf24;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 3px 10px rgba(251, 191, 36, 0.3);
+            position: relative;
+        }
+
+        .verse-ref::before {
+            content: "📖";
+            margin-right: 6px;
+            font-size: 0.9em;
+        }
+
+        .verse-ref:hover {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.4) 0%, rgba(245, 158, 11, 0.4) 100%);
+            border-color: #fbbf24;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 8px 20px rgba(251, 191, 36, 0.5);
+        }
+
+        .verse-ref::after {
+            content: "Clique para ver contexto";
             position: absolute;
+            bottom: -35px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: rgba(0, 0, 0, 0.9);
+            color: #fbbf24;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.75em;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .verse-ref:hover::after {
+            transform: translateX(-50%) scale(1);
+            opacity: 1;
+        }
+
+        .verse-ref-plain {
+            color: #fbbf24;
+            font-weight: 600;
+        }
+
+        /* 🆕 Modal de versículo MELHORADO */
+        .verse-modal {
+            position: fixed;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
-            background: url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23D4AF37" fill-opacity="0.05"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');
-        }
-
-        .header {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(212, 175, 55, 0.2);
-            padding: 1.5rem 2rem;
-            position: relative;
-            z-index: 10;
-        }
-
-        .header-content {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .logo {
-            font-family: 'Merriweather', serif;
-            font-size: 1.5rem;
-            font-weight: 900;
-            background: var(--gradient-divine);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .logo-icon {
-            font-size: 2rem;
-            filter: drop-shadow(0 2px 4px rgba(212, 175, 55, 0.3));
-        }
-
-        .subtitle {
-            color: #e0f2fe;
-            font-size: 0.875rem;
-            margin-top: 0.25rem;
-        }
-
-        .main-content {
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 2rem;
-            position: relative;
-            z-index: 1;
-        }
-
-        .chat-container {
-            background: rgba(15, 23, 42, 0.8);
-            backdrop-filter: blur(20px);
-            border-radius: 20px;
-            border: 2px solid rgba(212, 175, 55, 0.2);
-            padding: 2rem;
-            min-height: 500px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
-        }
-
-        .messages-area {
-            min-height: 400px;
-            margin-bottom: 2rem;
-        }
-
-        .message {
-            margin-bottom: 1.5rem;
-            animation: slideIn 0.5s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .message-user {
-            background: rgba(59, 130, 246, 0.1);
-            border: 2px solid rgba(59, 130, 246, 0.3);
-            border-radius: 15px;
-            padding: 1.25rem;
-            color: #e0f2fe;
-        }
-
-        .message-assistant {
-            background: rgba(212, 175, 55, 0.05);
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            border-radius: 15px;
-            padding: 1.5rem;
-            color: #fef3c7;
-        }
-
-        .message-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-            padding-bottom: 0.75rem;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .message-icon {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
-        }
-
-        .message-user .message-icon {
-            background: var(--gradient-secondary);
-        }
-
-        .message-assistant .message-icon {
-            background: var(--gradient-divine);
-            color: var(--dark);
-        }
-
-        .message-label {
-            font-weight: 700;
-            font-size: 0.875rem;
-        }
-
-        .message-content {
-            line-height: 1.8;
-            font-size: 1.05rem;
-        }
-
-        .message-content h3 {
-            color: var(--accent);
-            margin: 1.5rem 0 1rem;
-            font-size: 1.25rem;
-        }
-
-        .message-content p {
-            margin-bottom: 1rem;
-        }
-
-        .message-content ul, .message-content ol {
-            margin: 1rem 0 1rem 2rem;
-        }
-
-        .message-content li {
-            margin-bottom: 0.5rem;
-        }
-
-        /* ========================================
-           CITAÇÕES BÍBLICAS CLICÁVEIS
-           ======================================== */
-
-        .verse-reference {
-            display: inline-flex;
-            align-items: center;
-            background: rgba(212, 175, 55, 0.15);
-            border: 2px solid var(--primary);
-            padding: 0.25rem 0.75rem;
-            border-radius: 8px;
-            color: var(--accent);
-            font-weight: 700;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin: 0 0.25rem;
-            text-decoration: none;
-            gap: 0.5rem;
-        }
-
-        .verse-reference:hover {
-            background: var(--gradient-divine);
-            color: var(--dark);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
-        }
-
-        .verse-reference i {
-            font-size: 0.75rem;
-        }
-
-        /* ========================================
-           MODAL DE VERSÍCULOS
-           ======================================== */
-
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(15, 23, 42, 0.95);
-            backdrop-filter: blur(8px);
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(12px);
             z-index: 9999;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal-overlay.active {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem;
+            padding: 20px;
         }
 
-        .modal-container {
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            border-radius: 20px;
-            max-width: 800px;
+        .verse-modal-content {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border: 3px solid rgba(251, 191, 36, 0.4);
+            border-radius: 24px;
+            max-width: 900px;
             width: 100%;
             max-height: 85vh;
             overflow-y: auto;
-            box-shadow: 0 20px 60px rgba(212, 175, 55, 0.4);
-            animation: slideUp 0.4s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            box-shadow: 0 30px 60px -15px rgba(0, 0, 0, 0.9);
         }
 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
 
-        .modal-header {
-            background: var(--gradient-divine);
-            padding: 1.5rem 2rem;
-            border-radius: 18px 18px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .verse-modal.show .verse-modal-content {
+            animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        .modal-title {
-            font-family: 'Merriweather', serif;
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--dark);
-            margin: 0;
-        }
-
-        .modal-close {
-            background: rgba(15, 23, 42, 0.2);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            color: var(--dark);
-            font-size: 1.5rem;
-        }
-
-        .modal-close:hover {
-            background: rgba(15, 23, 42, 0.4);
-            transform: rotate(90deg);
-        }
-
-        .modal-body {
-            padding: 2rem;
-        }
-
-        .modal-translation-badge {
-            display: inline-block;
-            background: rgba(212, 175, 55, 0.2);
-            border: 1px solid var(--primary);
-            padding: 0.5rem 1rem;
-            border-radius: 10px;
-            color: var(--accent);
-            font-weight: 700;
-            font-size: 0.875rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .modal-context {
-            background: rgba(59, 130, 246, 0.05);
-            border: 2px solid rgba(59, 130, 246, 0.2);
-            border-radius: 15px;
-            padding: 1.5rem;
-        }
-
-        .modal-verse {
-            color: #e0f2fe;
-            font-size: 1.125rem;
-            line-height: 2;
-            margin-bottom: 1rem;
-        }
-
-        .modal-verse-number {
-            display: inline-block;
-            background: var(--gradient-divine);
-            color: var(--dark);
-            font-weight: 800;
-            padding: 0.25rem 0.75rem;
+        /* 🆕 Destaque do versículo específico no contexto */
+        .verse-highlight {
+            background: rgba(251, 191, 36, 0.15);
+            border-left: 4px solid #fbbf24;
+            padding: 12px 16px;
+            margin: 12px 0;
             border-radius: 8px;
-            margin-right: 0.75rem;
-            font-size: 0.875rem;
-            min-width: 35px;
-            text-align: center;
-        }
-
-        .modal-verse.highlighted {
-            background: rgba(212, 175, 55, 0.15);
-            border-left: 4px solid var(--primary);
-            padding: 1.25rem;
-            border-radius: 10px;
-            margin: 1.5rem 0;
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);
-        }
-
-        .modal-footer {
-            padding: 1.5rem 2rem;
-            border-top: 1px solid rgba(212, 175, 55, 0.2);
-            display: flex;
-            gap: 1rem;
-            justify-content: flex-end;
-        }
-
-        .modal-btn {
-            padding: 0.75rem 1.5rem;
-            border-radius: 10px;
-            border: none;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .modal-btn-primary {
-            background: var(--gradient-divine);
-            color: var(--dark);
-        }
-
-        .modal-btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.4);
-        }
-
-        .modal-btn-secondary {
-            background: transparent;
-            border: 2px solid var(--primary);
-            color: var(--accent);
-        }
-
-        .modal-btn-secondary:hover {
-            background: rgba(212, 175, 55, 0.1);
-        }
-
-        .modal-container::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .modal-container::-webkit-scrollbar-track {
-            background: rgba(15, 23, 42, 0.5);
-            border-radius: 10px;
-        }
-
-        .modal-container::-webkit-scrollbar-thumb {
-            background: var(--gradient-divine);
-            border-radius: 10px;
-        }
-
-        /* ========================================
-           INPUT AREA
-           ======================================== */
-
-        .input-area {
-            display: flex;
-            gap: 1rem;
-        }
-
-        .input-wrapper {
-            flex: 1;
+            font-weight: 600;
             position: relative;
         }
 
-        .input-field {
-            width: 100%;
-            padding: 1.25rem 1.5rem;
-            background: rgba(30, 41, 59, 0.6);
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            border-radius: 15px;
-            color: #e0f2fe;
-            font-size: 1rem;
-            font-family: 'Inter', sans-serif;
-            transition: all 0.3s ease;
+        .verse-highlight::before {
+            content: "→";
+            color: #fbbf24;
+            font-size: 1.5em;
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-50%);
         }
 
-        .input-field:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: rgba(30, 41, 59, 0.8);
-            box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1);
+        /* Scrollbar customizada */
+        ::-webkit-scrollbar {
+            width: 12px;
         }
 
-        .input-field::placeholder {
-            color: #94a3b8;
+        ::-webkit-scrollbar-track {
+            background: #1e293b;
+            border-radius: 10px;
         }
 
-        .send-button {
-            padding: 1.25rem 2rem;
-            background: var(--gradient-divine);
-            border: none;
-            border-radius: 15px;
-            color: var(--dark);
-            font-weight: 800;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            border-radius: 10px;
+            border: 2px solid #1e293b;
         }
 
-        .send-button:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
-        }
-
-        .send-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .loading {
-            display: none;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        .loading.active {
-            display: block;
-        }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(212, 175, 55, 0.2);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .loading-text {
-            color: var(--accent);
-            margin-top: 1rem;
-            font-weight: 600;
-        }
-
-        .error-message {
-            background: rgba(239, 68, 68, 0.1);
-            border: 2px solid rgba(239, 68, 68, 0.3);
-            border-radius: 15px;
-            padding: 1.5rem;
-            color: #fecaca;
-            margin-top: 1rem;
-        }
-
-        .error-message strong {
-            display: block;
-            margin-bottom: 0.5rem;
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 1rem;
-            }
-
-            .chat-container {
-                padding: 1.5rem;
-            }
-
-            .input-area {
-                flex-direction: column;
-            }
-
-            .send-button {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .modal-container {
-                max-height: 90vh;
-                margin: 1rem;
-            }
-
-            .modal-body {
-                padding: 1.5rem;
-            }
+        ::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
         }
     </style>
 </head>
-<body>
-    <div class="app-container">
-        <header class="header">
-            <div class="header-content">
-                <div>
-                    <div class="logo">
-                        <span class="logo-icon">📖</span>
-                        Assistente Bíblico Inteligente
+<body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen">
+    
+    <!-- ==================== TELA DE LOGIN ==================== -->
+    <div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none">
+            <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-yellow-500/10 rounded-full blur-3xl"></div>
+        </div>
+
+        <div class="w-full max-w-md relative animate-fade-in">
+            <div class="text-center mb-8">
+                <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-amber-500 to-amber-600 rounded-2xl shadow-2xl glow-animation mb-6">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                    </svg>
+                </div>
+                <h1 class="text-3xl font-bold text-white mb-2">Assistente Bíblico Inteligente</h1>
+                <p class="text-slate-400">Acesso seguro à consultoria espiritual</p>
+            </div>
+
+            <div id="loginCard" class="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700 shadow-2xl overflow-hidden">
+                <div class="p-8">
+                    <form id="loginForm" class="space-y-6">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-2">Usuário</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
+                                    </svg>
+                                </div>
+                                <input type="text" id="username" class="w-full bg-slate-900/50 text-white placeholder-slate-500 rounded-xl border border-slate-600 pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all" placeholder="Digite seu usuário" required/>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-slate-300 mb-2">Senha</label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <svg class="h-5 w-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+                                    </svg>
+                                </div>
+                                <input type="password" id="password" class="w-full bg-slate-900/50 text-white placeholder-slate-500 rounded-xl border border-slate-600 pl-10 pr-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent transition-all" placeholder="Digite sua senha" required/>
+                            </div>
+                        </div>
+
+                        <div id="loginError" class="hidden bg-red-500/10 border border-red-500/50 rounded-xl p-3 flex items-center gap-2">
+                            <svg class="w-5 h-5 text-red-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            <p class="text-sm text-red-300">Usuário ou senha incorretos</p>
+                        </div>
+
+                        <button type="submit" id="loginButton" class="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-amber-500/50">
+                            Entrar no Sistema
+                        </button>
+                    </form>
+                </div>
+
+                <div class="bg-slate-900/30 px-8 py-4 border-t border-slate-700">
+                    <p class="text-xs text-slate-500 text-center">🔒 Sessão expira em 2 horas de inatividade</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== APLICAÇÃO PRINCIPAL ==================== -->
+    <div id="mainApp" class="hidden min-h-screen">
+        
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-amber-600/10 via-amber-500/10 to-amber-600/10 backdrop-blur-sm border-b border-amber-500/20 sticky top-0 z-50">
+            <div class="max-w-6xl mx-auto px-6 py-4">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-4">
+                        <div class="relative">
+                            <div class="w-14 h-14 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center glow-animation shadow-2xl">
+                                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                                </svg>
+                            </div>
+                            <div class="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-slate-900 animate-pulse"></div>
+                        </div>
+                        <div>
+                            <h1 class="text-2xl font-bold gradient-text">Assistente Bíblico Inteligente</h1>
+                            <p class="text-sm text-amber-200/70">Consultoria espiritual com tecnologia IA</p>
+                        </div>
                     </div>
-                    <p class="subtitle">Consultoria espiritual com tecnologia IA</p>
+                    
+                    <button id="logoutButton" class="px-4 py-2 bg-slate-700/50 hover:bg-slate-700 text-slate-300 rounded-lg transition-colors text-sm">
+                        Sair
+                    </button>
                 </div>
             </div>
         </header>
 
-        <main class="main-content">
-            <div class="chat-container">
-                <div class="messages-area" id="messagesArea">
-                    <div class="message message-assistant">
-                        <div class="message-header">
-                            <div class="message-icon">📖</div>
-                            <span class="message-label">Assistente Bíblico</span>
-                        </div>
-                        <div class="message-content">
-                            <p>👋 <strong>Shalom!</strong> Sou seu assistente bíblico inteligente.</p>
-                            <p>Faça perguntas sobre as Escrituras e receba respostas fundamentadas com citações precisas e contexto completo.</p>
-                            <p><strong>Dica:</strong> Clique nas referências bíblicas <span class="verse-reference">📖 Exemplo 1:1 - NVI</span> para ver o contexto completo do capítulo!</p>
+        <!-- Main Content -->
+        <main class="max-w-6xl mx-auto px-6 py-8">
+            
+            <!-- Hero Section -->
+            <div class="text-center mb-12 animate-fade-in">
+                <div class="inline-block mb-6">
+                    <div class="relative">
+                        <svg class="w-24 h-24 text-amber-500 float-animation" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+                        </svg>
+                        <div class="absolute -bottom-2 left-1/2 transform -translate-x-1/2 px-3 py-1 bg-amber-500 text-white text-xs font-bold rounded-full">
+                            IA
                         </div>
                     </div>
                 </div>
+                
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-4">
+                    Tire suas dúvidas com a
+                    <span class="gradient-text">Palavra de Deus</span>
+                </h2>
+                <p class="text-lg text-slate-300 max-w-2xl mx-auto mb-2">
+                    Consulte as Escrituras Sagradas de forma inteligente. Pergunte sobre qualquer tema bíblico e receba respostas fundamentadas com citações completas.
+                </p>
+                <p class="text-sm text-amber-400/70">
+                    ✨ Powered by GPT-4o • 📖 12.000 versículos indexados • 🌍 3 traduções em português
+                </p>
+            </div>
 
-                <div class="loading" id="loading">
-                    <div class="loading-spinner"></div>
-                    <p class="loading-text">Consultando as Escrituras...</p>
-                </div>
-
-                <div class="input-area">
-                    <div class="input-wrapper">
-                        <input 
-                            type="text" 
-                            class="input-field" 
-                            id="questionInput"
-                            placeholder="Exemplo: O que Jesus disse sobre o amor ao próximo?"
-                            autocomplete="off"
-                        >
-                    </div>
-                    <button class="send-button" id="sendButton">
-                        <i class="fas fa-paper-plane"></i>
+            <!-- Input de Pergunta -->
+            <div class="bg-gradient-to-br from-slate-800/50 to-slate-700/30 backdrop-blur-xl rounded-3xl border-2 border-amber-500/20 p-8 mb-8 shadow-2xl animate-fade-in">
+                <label class="block text-lg font-semibold text-amber-100 mb-4 flex items-center gap-2">
+                    <svg class="w-5 h-5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                    </svg>
+                    Faça sua pergunta sobre a Bíblia:
+                </label>
+                
+                <div class="flex flex-col md:flex-row gap-4">
+                    <textarea 
+                        id="perguntaInput" 
+                        placeholder="Ex: O que a Bíblia diz sobre fé? ou Quem foi Abraão?" 
+                        class="flex-1 bg-slate-900/70 text-white placeholder-slate-500 rounded-2xl border-2 border-slate-600 focus:border-amber-500 px-6 py-4 focus:outline-none focus:ring-2 focus:ring-amber-500/50 resize-none transition-all shadow-inner"
+                        rows="3"
+                    ></textarea>
+                    
+                    <button 
+                        id="consultarButton" 
+                        class="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 disabled:from-slate-700 disabled:to-slate-700 disabled:cursor-not-allowed text-white px-8 py-4 rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 font-bold text-lg shadow-2xl hover:shadow-amber-500/50 transform hover:scale-105 disabled:transform-none"
+                    >
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
                         Consultar
                     </button>
                 </div>
-            </div>
-        </main>
-    </div>
 
-    <!-- MODAL DE VERSÍCULOS -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-container">
-            <div class="modal-header">
-                <h2 class="modal-title" id="modalTitle">Carregando...</h2>
-                <button class="modal-close" id="modalClose">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="modal-body">
-                <div class="modal-translation-badge" id="modalTranslation"></div>
-                <div class="modal-context" id="modalContext">
-                    <!-- Versículos serão inseridos aqui -->
+                <!-- Exemplos -->
+                <div id="exemplosArea" class="mt-6">
+                    <p class="text-sm text-slate-400 mb-3 flex items-center gap-2">
+                        <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        Exemplos de perguntas:
+                    </p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
+                        <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
+                            Onde Jesus nasceu?
+                        </button>
+                        <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
+                            Quem foi Abraão?
+                        </button>
+                        <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
+                            A história de José do Egito
+                        </button>
+                        <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
+                            Os 10 mandamentos
+                        </button>
+                        <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
+                            O que Deus disse sobre amar o próximo?
+                        </button>
+                        <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
+                            História de Moisés
+                        </button>
+                    </div>
                 </div>
             </div>
-            <div class="modal-footer">
-                <button class="modal-btn modal-btn-secondary" id="copyButton">
-                    <i class="fas fa-copy"></i>
-                    Copiar Texto
+
+            <!-- Error Area -->
+            <div id="errorArea" class="hidden bg-red-900/20 border-2 border-red-500/50 rounded-2xl p-6 mb-8 animate-fade-in">
+                <div class="flex items-start gap-4">
+                    <svg class="w-6 h-6 text-red-400 flex-shrink-0 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    </svg>
+                    <div class="flex-1">
+                        <p class="text-red-300 font-semibold text-lg mb-1">Ops! Algo deu errado</p>
+                        <p id="errorMessage" class="text-red-200/80"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Area -->
+            <div id="loadingArea" class="hidden bg-gradient-to-br from-slate-800/50 to-slate-700/30 backdrop-blur-xl rounded-3xl border-2 border-amber-500/20 p-12 text-center animate-fade-in shadow-2xl">
+                <div class="relative inline-block mb-6">
+                    <svg class="animate-spin h-16 w-16 text-amber-500" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                    </div>
+                </div>
+                <p class="text-white text-xl font-semibold mb-2">Consultando as Escrituras...</p>
+                <p class="text-slate-400">Buscando os versículos mais relevantes para sua pergunta</p>
+                <div class="mt-6 flex items-center justify-center gap-2 text-sm text-amber-400">
+                    <svg class="w-4 h-4 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/>
+                    </svg>
+                    <span>Powered by IA</span>
+                </div>
+            </div>
+
+            <!-- Resposta Area -->
+            <div id="respostaArea" class="hidden bg-gradient-to-br from-slate-800/50 to-slate-700/30 backdrop-blur-xl rounded-3xl border-2 border-amber-500/30 overflow-hidden shadow-2xl animate-fade-in">
+                <div class="bg-gradient-to-r from-green-600/20 via-green-500/20 to-green-600/20 border-b border-green-500/30 px-8 py-4 flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <p class="text-green-300 font-bold text-lg">Resposta Encontrada</p>
+                            <p class="text-green-200/70 text-sm">Fundamentada nas Escrituras Sagradas</p>
+                        </div>
+                    </div>
+                    <button id="novaConsultaBtn" class="px-4 py-2 bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-200 rounded-lg transition-all text-sm font-medium">
+                        Nova Consulta
+                    </button>
+                </div>
+
+                <div class="p-8">
+                    <div id="respostaTexto" class="text-slate-100 text-lg prose prose-invert max-w-none"></div>
+                    
+                    <!-- Livros Citados -->
+                    <div id="livrosCitadosArea" class="mt-8 p-6 bg-amber-500/5 border border-amber-500/20 rounded-2xl">
+                        <p class="text-amber-400 font-semibold mb-3 flex items-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                            </svg>
+                            Livros da Bíblia consultados:
+                        </p>
+                        <div id="livrosCitadosList" class="flex flex-wrap gap-2"></div>
+                    </div>
+                    
+                    <div class="mt-6 pt-6 border-t border-slate-700/50 flex items-center justify-between text-sm text-slate-500">
+                        <span class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            📖 Clique nas referências douradas para ver o contexto completo do capítulo
+                        </span>
+                        <span id="respostaTimestamp"></span>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="max-w-6xl mx-auto px-6 py-8 mt-12 border-t border-slate-700/50">
+            <div class="text-center">
+                <p class="text-slate-400 text-sm mb-2">
+                    🙏 Assistente Bíblico Inteligente • Desenvolvido com ❤️ para a glória de Deus
+                </p>
+                <p class="text-slate-500 text-xs">
+                    Tecnologia: GPT-4o + Pinecone + n8n • Traduções: NVI, ACF, AA
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- ==================== 🆕 MODAL DE VERSÍCULO MELHORADO ==================== -->
+    <div id="verseModal" class="verse-modal hidden">
+        <div class="verse-modal-content">
+            <!-- Header Melhorado -->
+            <div class="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 p-6 flex items-center justify-between">
+                <div class="flex-1">
+                    <h3 id="verseModalTitle" class="text-2xl font-bold text-white mb-1 flex items-center gap-2">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                        Versículo Bíblico
+                    </h3>
+                    <p id="verseModalSubtitle" class="text-amber-100 text-sm"></p>
+                </div>
+                <button id="closeVerseBtn" class="bg-white/20 hover:bg-white/30 text-white p-3 rounded-xl transition-all flex-shrink-0 ml-4">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                    </svg>
                 </button>
-                <button class="modal-btn modal-btn-primary" id="modalClose2">
-                    Fechar
-                </button>
+            </div>
+            
+            <!-- Conteúdo -->
+            <div class="p-8">
+                <div id="verseModalContent" class="text-slate-100 text-lg leading-relaxed"></div>
+            </div>
+
+            <!-- Footer -->
+            <div class="bg-slate-900/50 px-8 py-4 text-center border-t border-amber-500/20">
+                <p class="text-sm text-slate-400 flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                    </svg>
+                    📖 Clique fora ou pressione ESC para fechar
+                </p>
             </div>
         </div>
     </div>
 
     <script>
-        // ========================================
-        // VARIÁVEIS GLOBAIS
-        // ========================================
-        const messagesArea = document.getElementById('messagesArea');
-        const questionInput = document.getElementById('questionInput');
-        const sendButton = document.getElementById('sendButton');
-        const loading = document.getElementById('loading');
-        const modalOverlay = document.getElementById('modalOverlay');
-        const modalTitle = document.getElementById('modalTitle');
-        const modalTranslation = document.getElementById('modalTranslation');
-        const modalContext = document.getElementById('modalContext');
-        const modalClose = document.getElementById('modalClose');
-        const modalClose2 = document.getElementById('modalClose2');
-        const copyButton = document.getElementById('copyButton');
+        // ==========================================
+        // CONFIGURAÇÕES
+        // ==========================================
+        const CONFIG = {
+            username: 'admin',
+            password: 'mvpmvp',
+            webhookUrl: 'https://planejamentocomercialtvx.app.n8n.cloud/webhook/biblia-query',
+            sessionTimeout: 2 * 60 * 60 * 1000
+        };
 
-        // Armazena as fontes da última resposta
-        let currentFontes = [];
+        // ==========================================
+        // 🆕 VARIÁVEL GLOBAL PARA ARMAZENAR FONTES
+        // ==========================================
+        let fontesGlobal = [];
 
-        // URL do webhook n8n
-        const WEBHOOK_URL = 'https://luiszbraghin.app.n8n.cloud/webhook/biblia-query';
+        // ==========================================
+        // ELEMENTOS DO DOM
+        // ==========================================
+        const loginScreen = document.getElementById('loginScreen');
+        const mainApp = document.getElementById('mainApp');
+        const loginForm = document.getElementById('loginForm');
+        const loginCard = document.getElementById('loginCard');
+        const loginError = document.getElementById('loginError');
+        const logoutButton = document.getElementById('logoutButton');
 
-        // ========================================
-        // ENVIAR PERGUNTA
-        // ========================================
-        async function sendQuestion() {
-            const question = questionInput.value.trim();
+        const perguntaInput = document.getElementById('perguntaInput');
+        const consultarButton = document.getElementById('consultarButton');
+        const exemplosArea = document.getElementById('exemplosArea');
+        const errorArea = document.getElementById('errorArea');
+        const errorMessage = document.getElementById('errorMessage');
+        const loadingArea = document.getElementById('loadingArea');
+        const respostaArea = document.getElementById('respostaArea');
+        const respostaTexto = document.getElementById('respostaTexto');
+        const respostaTimestamp = document.getElementById('respostaTimestamp');
+        const livrosCitadosArea = document.getElementById('livrosCitadosArea');
+        const livrosCitadosList = document.getElementById('livrosCitadosList');
+        const novaConsultaBtn = document.getElementById('novaConsultaBtn');
+
+        const verseModal = document.getElementById('verseModal');
+        const verseModalTitle = document.getElementById('verseModalTitle');
+        const verseModalSubtitle = document.getElementById('verseModalSubtitle');
+        const verseModalContent = document.getElementById('verseModalContent');
+        const closeVerseBtn = document.getElementById('closeVerseBtn');
+
+        // ==========================================
+        // AUTENTICAÇÃO
+        // ==========================================
+        function checkAuth() {
+            const authDataStr = localStorage.getItem('authBibliaData');
             
-            if (!question) {
-                alert('Por favor, digite uma pergunta.');
-                return;
-            }
-
-            // Adicionar mensagem do usuário
-            addMessage('user', question);
-            
-            // Limpar input
-            questionInput.value = '';
-            
-            // Mostrar loading
-            loading.classList.add('active');
-            sendButton.disabled = true;
-
-            try {
-                const response = await fetch(WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ pergunta: question })
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Erro HTTP: ${response.status}`);
+            if (authDataStr) {
+                try {
+                    const authData = JSON.parse(authDataStr);
+                    const now = Date.now();
+                    
+                    if (authData.expiresAt && now > authData.expiresAt) {
+                        localStorage.removeItem('authBibliaData');
+                        showLogin();
+                    } else if (authData.authenticated) {
+                        showMainApp();
+                    } else {
+                        showLogin();
+                    }
+                } catch (e) {
+                    localStorage.removeItem('authBibliaData');
+                    showLogin();
                 }
-
-                const data = await response.json();
-                
-                // Armazenar fontes
-                currentFontes = data.fontes || [];
-                
-                // Adicionar resposta do assistente
-                addMessage('assistant', data.resposta);
-
-            } catch (error) {
-                console.error('Erro:', error);
-                addMessage('assistant', `
-                    <div class="error-message">
-                        <strong>❌ Erro ao consultar o assistente</strong>
-                        <p>${error.message}</p>
-                        <p>Por favor, tente novamente em alguns instantes.</p>
-                    </div>
-                `);
-            } finally {
-                loading.classList.remove('active');
-                sendButton.disabled = false;
+            } else {
+                showLogin();
             }
         }
 
-        // ========================================
-        // ADICIONAR MENSAGEM À INTERFACE
-        // ========================================
-        function addMessage(type, content) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message message-${type}`;
+        function showLogin() {
+            loginScreen.classList.remove('hidden');
+            mainApp.classList.add('hidden');
+        }
+
+        function showMainApp() {
+            loginScreen.classList.add('hidden');
+            mainApp.classList.remove('hidden');
+        }
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
             
-            const icon = type === 'user' ? '👤' : '📖';
-            const label = type === 'user' ? 'Você' : 'Assistente Bíblico';
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
             
-            messageDiv.innerHTML = `
-                <div class="message-header">
-                    <div class="message-icon">${icon}</div>
-                    <span class="message-label">${label}</span>
-                </div>
-                <div class="message-content">
-                    ${type === 'assistant' ? formatResponse(content) : `<p>${content}</p>`}
+            loginError.classList.add('hidden');
+            
+            if (username === CONFIG.username && password === CONFIG.password) {
+                const loginData = {
+                    authenticated: true,
+                    timestamp: Date.now(),
+                    expiresAt: Date.now() + CONFIG.sessionTimeout
+                };
+                localStorage.setItem('authBibliaData', JSON.stringify(loginData));
+                showMainApp();
+            } else {
+                loginError.classList.remove('hidden');
+                loginCard.classList.add('animate-shake');
+                setTimeout(() => loginCard.classList.remove('animate-shake'), 500);
+            }
+        });
+
+        logoutButton.addEventListener('click', () => {
+            localStorage.removeItem('authBibliaData');
+            showLogin();
+        });
+
+        // ==========================================
+        // FUNÇÃO DE LIMPEZA DE FORMATAÇÃO
+        // ==========================================
+        function limparFormatacaoProblematica(html) {
+            console.log('🧹 Limpando formatação problemática...');
+            
+            // Remove <strong>1.</strong>, <strong>2.</strong>, etc
+            html = html.replace(/<strong>(\d+)\.<\/strong>\s*\n/g, '$1.\n');
+            html = html.replace(/<strong>(\d+)\.<\/strong>\s*/g, '$1. ');
+            
+            // Remove <strong>**1.</strong> (asteriscos literais)
+            html = html.replace(/<strong>\*\*(\d+)\.<\/strong>/g, '$1.');
+            
+            console.log('✅ Limpeza concluída');
+            return html;
+        }
+
+        // ==========================================
+        // 🆕 FUNÇÃO DE MATCHING INTELIGENTE
+        // ==========================================
+        function encontrarFonteFlexivel(livro, capitulo, versiculo, traducao, fontes) {
+            console.log(`🔍 Buscando: ${livro} ${capitulo}:${versiculo} (${traducao})`);
+            
+            // Normaliza o livro para comparação
+            const livroNormalizado = livro.toLowerCase().trim();
+            
+            for (let i = 0; i < fontes.length; i++) {
+                const fonte = fontes[i];
+                
+                // Normaliza o livro da fonte
+                const livroFonteNormalizado = (fonte.livro || '').toLowerCase().trim();
+                
+                // Verifica se é o mesmo livro, capítulo e tradução
+                if (
+                    livroFonteNormalizado === livroNormalizado &&
+                    fonte.capitulo === capitulo &&
+                    fonte.traducao === traducao
+                ) {
+                    // 🆕 VERIFICA SE O VERSÍCULO ESTÁ NO RANGE
+                    const versInicio = fonte.versiculo_inicio || fonte.versiculo;
+                    const versFim = fonte.versiculo_fim || fonte.versiculo;
+                    
+                    if (versiculo >= versInicio && versiculo <= versFim) {
+                        console.log(`   ✅ ENCONTRADO! Fonte #${i}: ${fonte.referencia}`);
+                        console.log(`   Range: ${versInicio}-${versFim}, buscado: ${versiculo}`);
+                        return { fonte, indice: i };
+                    }
+                }
+            }
+            
+            console.warn(`   ⚠️ NÃO ENCONTRADO nas ${fontes.length} fontes`);
+            return null;
+        }
+
+        // ==========================================
+        // 🆕 MODAL DE VERSÍCULO MELHORADO COM CONTEXTO
+        // ==========================================
+        function openVerseModal(indice) {
+            console.log('📖 ===== ABRINDO MODAL =====');
+            console.log('Índice da fonte:', indice);
+            
+            const fonte = fontesGlobal[indice];
+            
+            if (!fonte) {
+                console.error('❌ Fonte não encontrada no índice', indice);
+                return;
+            }
+            
+            console.log('Fonte encontrada:', fonte.referencia);
+            console.log('Contexto:', fonte.texto_contexto?.length || 0, 'chars');
+            
+            verseModalTitle.textContent = fonte.referencia;
+            verseModalSubtitle.textContent = `${fonte.traducao} • Contexto completo do capítulo`;
+            
+            const textoContexto = fonte.texto_contexto || fonte.texto || '';
+            
+            // Formata o texto com quebras de parágrafo
+            let textoFormatado = textoContexto
+                .replace(/\n\n+/g, '</p><p class="mb-4 text-slate-100">')
+                .replace(/\n/g, '<br>');
+            
+            // Envolve em parágrafos
+            if (!textoFormatado.includes('<p')) {
+                textoFormatado = `<p class="mb-4 text-slate-100">${textoFormatado}</p>`;
+            }
+            
+            verseModalContent.innerHTML = `
+                <div class="verse-context">
+                    <div class="bg-amber-500/10 border-2 border-amber-500/30 rounded-xl p-4 mb-6 flex items-start gap-3">
+                        <svg class="w-6 h-6 text-amber-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        <div class="text-sm text-amber-200">
+                            <p class="font-bold mb-2 text-base">📖 Contexto Bíblico Completo</p>
+                            <p class="text-amber-300/90 leading-relaxed">
+                                Este trecho apresenta <strong class="text-amber-100">${fonte.referencia}</strong> 
+                                juntamente com os versículos adjacentes do capítulo, 
+                                fornecendo o contexto narrativo completo para melhor compreensão.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div class="verse-text bg-slate-900/60 rounded-xl p-6 border-2 border-amber-500/20 shadow-inner">
+                        <blockquote class="border-l-4 border-amber-500 pl-6 italic leading-relaxed text-slate-50">
+                            ${textoFormatado}
+                        </blockquote>
+                    </div>
+                    
+                    <div class="mt-6 pt-4 border-t border-slate-700/50 grid grid-cols-2 gap-4 text-xs text-slate-400">
+                        <div class="flex items-center gap-2">
+                            <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
+                            </svg>
+                            <span>Trecho das Escrituras Sagradas</span>
+                        </div>
+                        <div class="text-right flex items-center justify-end gap-2">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                            </svg>
+                            <span>${textoContexto.length} caracteres</span>
+                        </div>
+                    </div>
                 </div>
             `;
             
-            messagesArea.appendChild(messageDiv);
-            messagesArea.scrollTop = messagesArea.scrollHeight;
+            verseModal.classList.remove('hidden');
+            verseModal.classList.add('show');
+        }
 
-            // Se for resposta do assistente, ativar cliques nas citações
-            if (type === 'assistant') {
-                setTimeout(() => activateVerseClicks(), 100);
+        function closeVerseModal() {
+            verseModal.classList.add('hidden');
+            verseModal.classList.remove('show');
+        }
+
+        closeVerseBtn.addEventListener('click', closeVerseModal);
+        
+        verseModal.addEventListener('click', (e) => {
+            if (e.target === verseModal) closeVerseModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !verseModal.classList.contains('hidden')) {
+                closeVerseModal();
             }
-        }
+        });
 
-        // ========================================
-        // FORMATAR RESPOSTA (Markdown básico + Citações)
-        // ========================================
-        function formatResponse(text) {
-            // Converter **texto** em negrito
-            let formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            
-            // Converter quebras de linha em parágrafos
-            formatted = formatted.split('\n\n').map(p => `<p>${p}</p>`).join('');
-            
-            // Converter citações bíblicas em botões clicáveis
-            // Padrão: **(Livro Cap:Vers - TRAD)**
-            formatted = formatted.replace(
-                /\*\*\((.*?)\s+(\d+):(\d+(?:-\d+)?)\s*-\s*(NVI|ACF|AA)\)\*\*/g,
-                '<span class="verse-reference" data-ref="$1 $2:$3 - $4"><i class="fas fa-book-open"></i> $1 $2:$3 - $4</span>'
-            );
-            
-            return formatted;
-        }
+        // ==========================================
+        // CONSULTA
+        // ==========================================
+        consultarButton.addEventListener('click', fazerPergunta);
+        
+        perguntaInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                fazerPergunta();
+            }
+        });
 
-        // ========================================
-        // ATIVAR CLIQUES NAS CITAÇÕES
-        // ========================================
-        function activateVerseClicks() {
-            const verseRefs = document.querySelectorAll('.verse-reference');
-            
-            verseRefs.forEach(ref => {
-                ref.addEventListener('click', function() {
-                    const referencia = this.getAttribute('data-ref');
-                    openVerseModal(referencia);
-                });
+        document.querySelectorAll('.exemplo-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                perguntaInput.value = btn.textContent.trim();
+                fazerPergunta();
             });
-        }
+        });
 
-        // ========================================
-        // ABRIR MODAL COM CONTEXTO DO VERSÍCULO
-        // ========================================
-        function openVerseModal(referencia) {
-            console.log('📖 Abrindo modal para:', referencia);
+        novaConsultaBtn.addEventListener('click', () => {
+            respostaArea.classList.add('hidden');
+            exemplosArea.classList.remove('hidden');
+            perguntaInput.value = '';
+            perguntaInput.focus();
+            fontesGlobal = [];
+        });
+
+        async function fazerPergunta() {
+            const pergunta = perguntaInput.value.trim();
             
-            // Buscar fonte correspondente
-            const fonte = currentFontes.find(f => 
-                referencia.includes(f.referencia) || f.referencia.includes(referencia.split(' - ')[0])
-            );
-
-            if (!fonte) {
-                alert('❌ Contexto não encontrado para esta citação.');
-                console.warn('Fontes disponíveis:', currentFontes.map(f => f.referencia));
+            if (!pergunta) {
+                perguntaInput.focus();
                 return;
             }
 
-            // Preencher modal
-            modalTitle.textContent = fonte.referencia;
-            modalTranslation.textContent = `Tradução: ${fonte.traducao}`;
-
-            // Exibir versículos com destaque
-            if (fonte.versiculos_individuais && fonte.versiculos_individuais.length > 0) {
-                displayVersiculosIndividuais(fonte);
-            } else {
-                // Fallback: exibir texto contexto
-                modalContext.innerHTML = `
-                    <div class="modal-verse">
-                        ${fonte.texto_contexto || fonte.texto}
-                    </div>
-                `;
-            }
-
-            // Mostrar modal
-            modalOverlay.classList.add('active');
-        }
-
-        // ========================================
-        // EXIBIR VERSÍCULOS INDIVIDUAIS COM DESTAQUE
-        // ========================================
-        function displayVersiculosIndividuais(fonte) {
-            let html = '';
+            consultarButton.disabled = true;
+            consultarButton.innerHTML = '<svg class="animate-spin h-6 w-6" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Consultando...';
             
-            fonte.versiculos_individuais.forEach(vers => {
-                // Verificar se é o versículo citado (deve ser destacado)
-                const isHighlighted = vers.versiculo >= fonte.versiculo_inicio && 
-                                     vers.versiculo <= fonte.versiculo_fim;
+            errorArea.classList.add('hidden');
+            respostaArea.classList.add('hidden');
+            loadingArea.classList.remove('hidden');
+            exemplosArea.classList.add('hidden');
+
+            try {
+                const response = await fetch(CONFIG.webhookUrl, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ pergunta: pergunta })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('🔍 ===== DEBUG COMPLETO =====');
+                console.log('📦 Resposta completa:', data);
+                console.log('📊 Fontes:', data.fontes);
+                console.log('============================');
                 
-                const highlightClass = isHighlighted ? 'highlighted' : '';
+                let respostaTextoFinal = data.resposta || data.message?.content || '';
+                const fontes = data.fontes || [];
                 
-                html += `
-                    <div class="modal-verse ${highlightClass}">
-                        <span class="modal-verse-number">${vers.versiculo}</span>
-                        ${vers.texto}
-                    </div>
-                `;
-            });
-            
-            modalContext.innerHTML = html;
-        }
+                // 🆕 ARMAZENA FONTES GLOBALMENTE
+                fontesGlobal = fontes;
+                
+                console.log(`✅ Total de fontes recebidas: ${fontes.length}`);
+                
+                // 🆕 SUBSTITUI **(...)** POR HTML CLICÁVEL - USA ÍNDICE!
+                let countSubstituicoes = 0;
+                
+                respostaTextoFinal = respostaTextoFinal.replace(
+                    /\*\*\(([^)]+)\)\*\*/g,
+                    (match, ref) => {
+                        countSubstituicoes++;
+                        console.log(`🔍 [${countSubstituicoes}] Processando: "${ref}"`);
+                        
+                        // Parse da referência: "Deuteronômio 10:12 - NVI"
+                        const refParts = ref.match(/^(.+?)\s+(\d+):(\d+(?:-\d+)?)\s*-\s*(NVI|ACF|AA)$/);
+                        
+                        if (!refParts) {
+                            console.warn(`⚠️ Formato não reconhecido: "${ref}"`);
+                            return `<span class="verse-ref-plain">${ref}</span>`;
+                        }
+                        
+                        const [_, livro, cap, vers, trad] = refParts;
+                        
+                        // 🆕 PARSE DO VERSÍCULO (pode ser range como "10-12")
+                        const versiculoNumero = parseInt(vers.split('-')[0]); // Pega primeiro número
+                        
+                        console.log(`   📖 Buscando: ${livro} ${cap}:${versiculoNumero} (${trad})`);
+                        
+                        // 🆕 USA MATCHING FLEXÍVEL
+                        const resultado = encontrarFonteFlexivel(livro, parseInt(cap), versiculoNumero, trad, fontes);
+                        
+                        if (resultado) {
+                            console.log(`   ✅ ENCONTRADO! Índice: ${resultado.indice}`);
+                            
+                            // 🆕 GUARDA APENAS O ÍNDICE (não o texto!)
+                            return `<span class="verse-ref" data-indice="${resultado.indice}">${ref}</span>`;
+                        } else {
+                            console.warn(`   ⚠️ NÃO ENCONTRADO`);
+                            return `<span class="verse-ref-plain">${ref}</span>`;
+                        }
+                    }
+                );
+                
+                console.log(`🎯 Total de substituições: ${countSubstituicoes}`);
+                
+                // Converte markdown para HTML
+                let htmlContent = marked.parse(respostaTextoFinal);
+                
+                // Limpa formatação problemática
+                htmlContent = limparFormatacaoProblematica(htmlContent);
+                
+                respostaTexto.innerHTML = htmlContent;
+                
+                // 🆕 ADICIONA EVENTO DE CLIQUE NAS REFERÊNCIAS (USA ÍNDICE!)
+                const verseRefs = respostaTexto.querySelectorAll('.verse-ref');
+                console.log(`🖱️ Total de .verse-ref encontrados: ${verseRefs.length}`);
+                
+                verseRefs.forEach((ref, idx) => {
+                    const indice = parseInt(ref.dataset.indice);
+                    console.log(`   [${idx+1}] Adicionando click - índice: ${indice}`);
+                    
+                    ref.addEventListener('click', () => {
+                        console.log(`🖱️ CLIQUE! Abrindo modal com índice: ${indice}`);
+                        openVerseModal(indice);
+                    });
+                });
 
-        // ========================================
-        // FECHAR MODAL
-        // ========================================
-        function closeModal() {
-            modalOverlay.classList.remove('active');
-        }
+                // Mostra livros citados
+                if (fontes.length > 0) {
+                    const livrosUnicos = [...new Set(fontes.map(f => f.livro).filter(Boolean))];
+                    livrosCitadosList.innerHTML = livrosUnicos.map(livro => 
+                        `<span class="inline-block bg-amber-500/10 border border-amber-500/30 text-amber-300 px-3 py-1 rounded-lg text-sm font-medium">${livro}</span>`
+                    ).join('');
+                    livrosCitadosArea.classList.remove('hidden');
+                } else {
+                    livrosCitadosArea.classList.add('hidden');
+                }
 
-        modalClose.addEventListener('click', closeModal);
-        modalClose2.addEventListener('click', closeModal);
-
-        modalOverlay.addEventListener('click', function(e) {
-            if (e.target === modalOverlay) {
-                closeModal();
-            }
-        });
-
-        // ESC para fechar
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape' && modalOverlay.classList.contains('active')) {
-                closeModal();
-            }
-        });
-
-        // ========================================
-        // COPIAR TEXTO DO MODAL
-        // ========================================
-        copyButton.addEventListener('click', function() {
-            const text = modalContext.innerText;
-            
-            navigator.clipboard.writeText(text).then(() => {
-                const originalText = copyButton.innerHTML;
-                copyButton.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                respostaTimestamp.textContent = new Date().toLocaleString('pt-BR');
+                
+                loadingArea.classList.add('hidden');
+                respostaArea.classList.remove('hidden');
                 
                 setTimeout(() => {
-                    copyButton.innerHTML = originalText;
-                }, 2000);
-            }).catch(err => {
-                console.error('Erro ao copiar:', err);
-                alert('Erro ao copiar texto');
-            });
-        });
-
-        // ========================================
-        // EVENT LISTENERS
-        // ========================================
-        sendButton.addEventListener('click', sendQuestion);
-
-        questionInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                sendQuestion();
+                    respostaArea.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }, 300);
+                
+            } catch (err) {
+                console.error('❌ ERRO:', err);
+                
+                loadingArea.classList.add('hidden');
+                errorArea.classList.remove('hidden');
+                errorMessage.textContent = err.message || 'Erro ao conectar com o servidor. Tente novamente.';
+                exemplosArea.classList.remove('hidden');
+            } finally {
+                consultarButton.disabled = false;
+                consultarButton.innerHTML = '<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg> Consultar';
             }
-        });
+        }
 
-        // ========================================
-        // INICIALIZAÇÃO
-        // ========================================
-        console.log('✅ Assistente Bíblico Inteligente carregado!');
-        console.log('Webhook URL:', WEBHOOK_URL);
+        // Inicialização
+        checkAuth();
     </script>
 </body>
 </html>
