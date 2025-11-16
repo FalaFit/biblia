@@ -950,11 +950,53 @@
                 
                 console.log(`🎯 Total de substituições: ${countSubstituicoes}`);
                 
-                // Converte markdown para HTML
+               // Converte markdown para HTML
                 let htmlContent = marked.parse(respostaTextoFinal);
                 
                 // Limpa formatação problemática
                 htmlContent = limparFormatacaoProblematica(htmlContent);
+                
+                // 🆕 CRÍTICO: Processa citações DEPOIS da conversão Markdown → HTML
+                // Marked.parse() converte **(texto)** em <strong>(texto)</strong>
+                let countSubstituicoes = 0;
+                
+                htmlContent = htmlContent.replace(
+                    /<strong>\(([^)]+)\)<\/strong>/g,
+                    (match, ref) => {
+                        countSubstituicoes++;
+                        console.log(`🔍 [${countSubstituicoes}] Processando: "${ref}"`);
+                        
+                        // Parse da referência: "Deuteronômio 10:12 - NVI"
+                        const refParts = ref.match(/^(.+?)\s+(\d+):(\d+(?:-\d+)?)\s*-\s*(NVI|ACF|ARA|AA)$/);
+                        
+                        if (!refParts) {
+                            console.warn(`⚠️ Formato não reconhecido: "${ref}"`);
+                            return `<span class="verse-ref-plain">${ref}</span>`;
+                        }
+                        
+                        const [_, livro, cap, vers, trad] = refParts;
+                        
+                        // 🆕 PARSE DO VERSÍCULO (pode ser range como "10-12")
+                        const versiculoNumero = parseInt(vers.split('-')[0]); // Pega primeiro número
+                        
+                        console.log(`   📖 Buscando: ${livro} ${cap}:${versiculoNumero} (${trad})`);
+                        
+                        // 🆕 USA MATCHING FLEXÍVEL
+                        const resultado = encontrarFonteFlexivel(livro, parseInt(cap), versiculoNumero, trad, fontesGlobal);
+                        
+                        if (resultado) {
+                            console.log(`   ✅ ENCONTRADO! Índice: ${resultado.indice}`);
+                            
+                            // 🆕 GUARDA APENAS O ÍNDICE (não o texto!)
+                            return `<span class="verse-ref" data-indice="${resultado.indice}">${ref}</span>`;
+                        } else {
+                            console.warn(`   ⚠️ NÃO ENCONTRADO`);
+                            return `<span class="verse-ref-plain">${ref}</span>`;
+                        }
+                    }
+                );
+                
+                console.log(`🎯 Total de citações processadas: ${countSubstituicoes}`);
                 
                 respostaTexto.innerHTML = htmlContent;
                 
