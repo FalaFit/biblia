@@ -358,7 +358,7 @@
                     Consulte as Escrituras Sagradas de forma inteligente. Pergunte sobre qualquer tema bíblico e receba respostas fundamentadas com citações completas.
                 </p>
                 <p class="text-sm text-amber-400/70">
-                    ✨ Powered by GPT-4o • 📖 12.000 versículos indexados • 🌍 3 traduções em português
+                    ✨ Powered by GPT-4o • 📖 12.000 versículos indexados • 🌐 3 traduções em português
                 </p>
             </div>
 
@@ -684,33 +684,40 @@
         }
 
         // ==========================================
-        // 🆕 FUNÇÃO DE MATCHING INTELIGENTE
+        // 🆕 FUNÇÃO DE MATCHING INTELIGENTE - CORRIGIDA!
         // ==========================================
         function encontrarFonteFlexivel(livro, capitulo, versiculo, traducao, fontes) {
             console.log(`🔍 Buscando: ${livro} ${capitulo}:${versiculo} (${traducao})`);
             
-            // Normaliza o livro para comparação
-            const livroNormalizado = livro.toLowerCase().trim();
+            // ✅ NORMALIZA TEXTO (remove acentos)
+            const normalizarTexto = (texto) => {
+                return texto
+                    .toLowerCase()
+                    .normalize('NFD')
+                    .replace(/[\u0300-\u036f]/g, '')
+                    .trim();
+            };
+            
+            const livroNormalizado = normalizarTexto(livro);
             
             for (let i = 0; i < fontes.length; i++) {
                 const fonte = fontes[i];
+                const livroFonteNormalizado = normalizarTexto(fonte.livro || '');
                 
-                // Normaliza o livro da fonte
-                const livroFonteNormalizado = (fonte.livro || '').toLowerCase().trim();
+                // ✅ MATCH: livro + capítulo + tradução
+                const mesmoLivro = livroFonteNormalizado === livroNormalizado || 
+                                  livroFonteNormalizado.includes(livroNormalizado) ||
+                                  livroNormalizado.includes(livroFonteNormalizado);
                 
-                // Verifica se é o mesmo livro, capítulo e tradução
-                if (
-                    livroFonteNormalizado === livroNormalizado &&
-                    fonte.capitulo === capitulo &&
-                    fonte.traducao === traducao
-                ) {
-                    // 🆕 VERIFICA SE O VERSÍCULO ESTÁ NO RANGE
-                    const versInicio = fonte.versiculo_inicio || fonte.versiculo;
-                    const versFim = fonte.versiculo_fim || fonte.versiculo;
+                if (mesmoLivro && fonte.capitulo === capitulo && fonte.traducao === traducao) {
+                    // ✅ VERIFICA SE VERSÍCULO ESTÁ NO RANGE!
+                    const versInicio = fonte.versiculo_inicio || fonte.versiculo || 0;
+                    const versFim = fonte.versiculo_fim || fonte.versiculo || versInicio;
+                    const versiculoInt = parseInt(versiculo);
                     
-                    if (versiculo >= versInicio && versiculo <= versFim) {
+                    if (versiculoInt >= versInicio && versiculoInt <= versFim) {
                         console.log(`   ✅ ENCONTRADO! Fonte #${i}: ${fonte.referencia}`);
-                        console.log(`   Range: ${versInicio}-${versFim}, buscado: ${versiculo}`);
+                        console.log(`   Range: ${versInicio}-${versFim}, buscado: ${versiculoInt}`);
                         return { fonte, indice: i };
                     }
                 }
@@ -721,7 +728,7 @@
         }
 
         // ==========================================
-        // 🆕 MODAL DE VERSÍCULO MELHORADO COM CONTEXTO
+        // 🆕 MODAL DE VERSÍCULO MELHORADO COM CONTEXTO - CORRIGIDO!
         // ==========================================
         function openVerseModal(indice) {
             console.log('📖 ===== ABRINDO MODAL =====');
@@ -731,23 +738,42 @@
             
             if (!fonte) {
                 console.error('❌ Fonte não encontrada no índice', indice);
+                alert('❌ Erro: Não foi possível carregar o contexto deste versículo.');
                 return;
             }
             
-            console.log('Fonte encontrada:', fonte.referencia);
-            console.log('Contexto:', fonte.texto_contexto?.length || 0, 'chars');
+            console.log('✅ Fonte encontrada:', fonte.referencia);
             
             verseModalTitle.textContent = fonte.referencia;
             verseModalSubtitle.textContent = `${fonte.traducao} • Contexto completo do capítulo`;
             
-            const textoContexto = fonte.texto_contexto || fonte.texto || '';
+            // ✅ 3 ESTRATÉGIAS PARA EXTRAIR CONTEXTO
+            let textoParaExibir = '';
+            
+            // ESTRATÉGIA 1: texto_contexto (MELHOR - 1500+ chars)
+            if (fonte.texto_contexto && fonte.texto_contexto.length > 100) {
+                textoParaExibir = fonte.texto_contexto;
+                console.log('   ✅ Usando texto_contexto:', textoParaExibir.length, 'chars');
+            }
+            // ESTRATÉGIA 2: versiculos_individuais (BOA)
+            else if (fonte.versiculos_individuais && fonte.versiculos_individuais.length > 0) {
+                textoParaExibir = fonte.versiculos_individuais
+                    .map(v => `${v.versiculo}. ${v.texto}`)
+                    .join('\n\n');
+                console.log('   ✅ Usando versiculos_individuais:', fonte.versiculos_individuais.length, 'versículos');
+            }
+            // ESTRATÉGIA 3: texto simples (FALLBACK)
+            else {
+                textoParaExibir = fonte.texto || 'Contexto não disponível';
+                console.warn('   ⚠️ Usando apenas texto simples:', textoParaExibir.length, 'chars');
+            }
             
             // Formata o texto com quebras de parágrafo
-            let textoFormatado = textoContexto
+            let textoFormatado = textoParaExibir
                 .replace(/\n\n+/g, '</p><p class="mb-4 text-slate-100">')
                 .replace(/\n/g, '<br>');
             
-            // Envolve em parágrafos
+            // Envolve em parágrafos se necessário
             if (!textoFormatado.includes('<p')) {
                 textoFormatado = `<p class="mb-4 text-slate-100">${textoFormatado}</p>`;
             }
@@ -785,7 +811,7 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
                             </svg>
-                            <span>${textoContexto.length} caracteres</span>
+                            <span>${textoParaExibir.length} caracteres</span>
                         </div>
                     </div>
                 </div>
@@ -793,6 +819,8 @@
             
             verseModal.classList.remove('hidden');
             verseModal.classList.add('show');
+            
+            console.log('✅ Modal aberto com sucesso!');
         }
 
         function closeVerseModal() {
@@ -869,7 +897,7 @@
                 }
 
                 const data = await response.json();
-                console.log('🔍 ===== DEBUG COMPLETO =====');
+                console.log('📦 ===== DEBUG COMPLETO =====');
                 console.log('📦 Resposta completa:', data);
                 console.log('📊 Fontes:', data.fontes);
                 console.log('============================');
@@ -879,8 +907,7 @@
                 
                 // 🆕 ARMAZENA FONTES GLOBALMENTE
                 fontesGlobal = fontes;
-                
-                console.log(`✅ Total de fontes recebidas: ${fontes.length}`);
+                console.log(`✅ Fontes armazenadas globalmente: ${fontesGlobal.length}`);
                 
                 // 🆕 SUBSTITUI **(...)** POR HTML CLICÁVEL - USA ÍNDICE!
                 let countSubstituicoes = 0;
