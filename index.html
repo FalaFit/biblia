@@ -63,7 +63,6 @@
 
         .hidden { display: none; }
 
-        /* Formatação da resposta */
         #respostaTexto {
             line-height: 1.8;
         }
@@ -103,7 +102,6 @@
             margin: 2.5rem 0;
         }
 
-        /* 🆕 Referências bíblicas CLICÁVEIS em destaque */
         .verse-ref {
             display: inline-block;
             background: linear-gradient(135deg, rgba(251, 191, 36, 0.25) 0%, rgba(245, 158, 11, 0.25) 100%);
@@ -160,7 +158,6 @@
             font-weight: 600;
         }
 
-        /* 🆕 Modal de versículo MELHORADO */
         .verse-modal {
             position: fixed;
             top: 0;
@@ -196,28 +193,6 @@
             animation: slideUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* 🆕 Destaque do versículo específico no contexto */
-        .verse-highlight {
-            background: rgba(251, 191, 36, 0.15);
-            border-left: 4px solid #fbbf24;
-            padding: 12px 16px;
-            margin: 12px 0;
-            border-radius: 8px;
-            font-weight: 600;
-            position: relative;
-        }
-
-        .verse-highlight::before {
-            content: "→";
-            color: #fbbf24;
-            font-size: 1.5em;
-            position: absolute;
-            left: -8px;
-            top: 50%;
-            transform: translateY(-50%);
-        }
-
-        /* Scrollbar customizada */
         ::-webkit-scrollbar {
             width: 12px;
         }
@@ -240,7 +215,7 @@
 </head>
 <body class="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen">
     
-    <!-- ==================== TELA DE LOGIN ==================== -->
+    <!-- TELA DE LOGIN -->
     <div id="loginScreen" class="min-h-screen flex items-center justify-center px-4">
         <div class="absolute inset-0 overflow-hidden pointer-events-none">
             <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"></div>
@@ -305,7 +280,7 @@
         </div>
     </div>
 
-    <!-- ==================== APLICAÇÃO PRINCIPAL ==================== -->
+    <!-- APLICAÇÃO PRINCIPAL -->
     <div id="mainApp" class="hidden min-h-screen">
         
         <!-- Header -->
@@ -358,7 +333,7 @@
                     Consulte as Escrituras Sagradas de forma inteligente. Pergunte sobre qualquer tema bíblico e receba respostas fundamentadas com citações completas.
                 </p>
                 <p class="text-sm text-amber-400/70">
-                    ✨ Powered by GPT-4o • 📖 12.000 versículos indexados • 🌐 3 traduções em português
+                    ✨ Powered by GPT-4o • 📖 12.000 versículos indexados • 🌍 3 traduções em português
                 </p>
             </div>
 
@@ -400,7 +375,7 @@
                     </p>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2">
                         <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
-                            Onde Jesus nasceu?
+                            O que Deus disse sobre amar o próximo?
                         </button>
                         <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
                             Quem foi Abraão?
@@ -412,7 +387,7 @@
                             Os 10 mandamentos
                         </button>
                         <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
-                            O que Deus disse sobre amar o próximo?
+                            Onde Jesus nasceu?
                         </button>
                         <button class="exemplo-btn text-sm bg-slate-800/60 hover:bg-amber-500/20 border border-slate-700 hover:border-amber-500/40 text-slate-300 hover:text-amber-200 px-4 py-3 rounded-xl transition-all text-left">
                             História de Moisés
@@ -511,16 +486,15 @@
                     🙏 Assistente Bíblico Inteligente • Desenvolvido com ❤️ para a glória de Deus
                 </p>
                 <p class="text-slate-500 text-xs">
-                    Tecnologia: GPT-4o + Pinecone + n8n • Traduções: NVI, ACF, AA
+                    Tecnologia: GPT-4o + Supabase + n8n • Traduções: NVI, ACF, ARA
                 </p>
             </div>
         </footer>
     </div>
 
-    <!-- ==================== 🆕 MODAL DE VERSÍCULO MELHORADO ==================== -->
+    <!-- MODAL DE VERSÍCULO -->
     <div id="verseModal" class="verse-modal hidden">
         <div class="verse-modal-content">
-            <!-- Header Melhorado -->
             <div class="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 p-6 flex items-center justify-between">
                 <div class="flex-1">
                     <h3 id="verseModalTitle" class="text-2xl font-bold text-white mb-1 flex items-center gap-2">
@@ -538,12 +512,10 @@
                 </button>
             </div>
             
-            <!-- Conteúdo -->
             <div class="p-8">
                 <div id="verseModalContent" class="text-slate-100 text-lg leading-relaxed"></div>
             </div>
 
-            <!-- Footer -->
             <div class="bg-slate-900/50 px-8 py-4 text-center border-t border-amber-500/20">
                 <p class="text-sm text-slate-400 flex items-center justify-center gap-2">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -556,9 +528,7 @@
     </div>
 
     <script>
-        // ==========================================
         // CONFIGURAÇÕES
-        // ==========================================
         const CONFIG = {
             username: 'admin',
             password: 'mvpmvp',
@@ -566,14 +536,10 @@
             sessionTimeout: 2 * 60 * 60 * 1000
         };
 
-        // ==========================================
-        // 🆕 VARIÁVEL GLOBAL PARA ARMAZENAR FONTES
-        // ==========================================
+        // VARIÁVEL GLOBAL PARA ARMAZENAR FONTES
         let fontesGlobal = [];
 
-        // ==========================================
         // ELEMENTOS DO DOM
-        // ==========================================
         const loginScreen = document.getElementById('loginScreen');
         const mainApp = document.getElementById('mainApp');
         const loginForm = document.getElementById('loginForm');
@@ -600,9 +566,7 @@
         const verseModalContent = document.getElementById('verseModalContent');
         const closeVerseBtn = document.getElementById('closeVerseBtn');
 
-        // ==========================================
         // AUTENTICAÇÃO
-        // ==========================================
         function checkAuth() {
             const authDataStr = localStorage.getItem('authBibliaData');
             
@@ -666,30 +630,22 @@
             showLogin();
         });
 
-        // ==========================================
         // FUNÇÃO DE LIMPEZA DE FORMATAÇÃO
-        // ==========================================
         function limparFormatacaoProblematica(html) {
             console.log('🧹 Limpando formatação problemática...');
             
-            // Remove <strong>1.</strong>, <strong>2.</strong>, etc
             html = html.replace(/<strong>(\d+)\.<\/strong>\s*\n/g, '$1.\n');
             html = html.replace(/<strong>(\d+)\.<\/strong>\s*/g, '$1. ');
-            
-            // Remove <strong>**1.</strong> (asteriscos literais)
             html = html.replace(/<strong>\*\*(\d+)\.<\/strong>/g, '$1.');
             
             console.log('✅ Limpeza concluída');
             return html;
         }
 
-        // ==========================================
-        // 🆕 FUNÇÃO DE MATCHING INTELIGENTE - CORRIGIDA!
-        // ==========================================
+        // FUNÇÃO DE MATCHING INTELIGENTE
         function encontrarFonteFlexivel(livro, capitulo, versiculo, traducao, fontes) {
             console.log(`🔍 Buscando: ${livro} ${capitulo}:${versiculo} (${traducao})`);
             
-            // ✅ NORMALIZA TEXTO (remove acentos)
             const normalizarTexto = (texto) => {
                 return texto
                     .toLowerCase()
@@ -704,20 +660,17 @@
                 const fonte = fontes[i];
                 const livroFonteNormalizado = normalizarTexto(fonte.livro || '');
                 
-                // ✅ MATCH: livro + capítulo + tradução
                 const mesmoLivro = livroFonteNormalizado === livroNormalizado || 
                                   livroFonteNormalizado.includes(livroNormalizado) ||
                                   livroNormalizado.includes(livroFonteNormalizado);
                 
                 if (mesmoLivro && fonte.capitulo === capitulo && fonte.traducao === traducao) {
-                    // ✅ VERIFICA SE VERSÍCULO ESTÁ NO RANGE!
                     const versInicio = fonte.versiculo_inicio || fonte.versiculo || 0;
                     const versFim = fonte.versiculo_fim || fonte.versiculo || versInicio;
                     const versiculoInt = parseInt(versiculo);
                     
                     if (versiculoInt >= versInicio && versiculoInt <= versFim) {
                         console.log(`   ✅ ENCONTRADO! Fonte #${i}: ${fonte.referencia}`);
-                        console.log(`   Range: ${versInicio}-${versFim}, buscado: ${versiculoInt}`);
                         return { fonte, indice: i };
                     }
                 }
@@ -727,9 +680,7 @@
             return null;
         }
 
-        // ==========================================
-        // 🆕 MODAL DE VERSÍCULO MELHORADO COM CONTEXTO - CORRIGIDO!
-        // ==========================================
+        // MODAL DE VERSÍCULO
         function openVerseModal(indice) {
             console.log('📖 ===== ABRINDO MODAL =====');
             console.log('Índice da fonte:', indice);
@@ -747,33 +698,25 @@
             verseModalTitle.textContent = fonte.referencia;
             verseModalSubtitle.textContent = `${fonte.traducao} • Contexto completo do capítulo`;
             
-            // ✅ 3 ESTRATÉGIAS PARA EXTRAIR CONTEXTO
             let textoParaExibir = '';
             
-            // ESTRATÉGIA 1: texto_contexto (MELHOR - 1500+ chars)
             if (fonte.texto_contexto && fonte.texto_contexto.length > 100) {
                 textoParaExibir = fonte.texto_contexto;
                 console.log('   ✅ Usando texto_contexto:', textoParaExibir.length, 'chars');
-            }
-            // ESTRATÉGIA 2: versiculos_individuais (BOA)
-            else if (fonte.versiculos_individuais && fonte.versiculos_individuais.length > 0) {
+            } else if (fonte.versiculos_individuais && fonte.versiculos_individuais.length > 0) {
                 textoParaExibir = fonte.versiculos_individuais
                     .map(v => `${v.versiculo}. ${v.texto}`)
                     .join('\n\n');
                 console.log('   ✅ Usando versiculos_individuais:', fonte.versiculos_individuais.length, 'versículos');
-            }
-            // ESTRATÉGIA 3: texto simples (FALLBACK)
-            else {
+            } else {
                 textoParaExibir = fonte.texto || 'Contexto não disponível';
                 console.warn('   ⚠️ Usando apenas texto simples:', textoParaExibir.length, 'chars');
             }
             
-            // Formata o texto com quebras de parágrafo
             let textoFormatado = textoParaExibir
                 .replace(/\n\n+/g, '</p><p class="mb-4 text-slate-100">')
                 .replace(/\n/g, '<br>');
             
-            // Envolve em parágrafos se necessário
             if (!textoFormatado.includes('<p')) {
                 textoFormatado = `<p class="mb-4 text-slate-100">${textoFormatado}</p>`;
             }
@@ -840,9 +783,7 @@
             }
         });
 
-        // ==========================================
         // CONSULTA
-        // ==========================================
         consultarButton.addEventListener('click', fazerPergunta);
         
         perguntaInput.addEventListener('keydown', (e) => {
@@ -905,59 +846,17 @@
                 let respostaTextoFinal = data.resposta || data.message?.content || '';
                 const fontes = data.fontes || [];
                 
-                // 🆕 ARMAZENA FONTES GLOBALMENTE
+                // ARMAZENA FONTES GLOBALMENTE
                 fontesGlobal = fontes;
                 console.log(`✅ Fontes armazenadas globalmente: ${fontesGlobal.length}`);
                 
-                // 🆕 SUBSTITUI **(...)** POR HTML CLICÁVEL - USA ÍNDICE!
-                let countSubstituicoes = 0;
-                
-                respostaTextoFinal = respostaTextoFinal.replace(
-                    /\*\*\(([^)]+)\)\*\*/g,
-                    (match, ref) => {
-                        countSubstituicoes++;
-                        console.log(`🔍 [${countSubstituicoes}] Processando: "${ref}"`);
-                        
-                        // Parse da referência: "Deuteronômio 10:12 - NVI"
-                        const refParts = ref.match(/^(.+?)\s+(\d+):(\d+(?:-\d+)?)\s*-\s*(NVI|ACF|AA)$/);
-                        
-                        if (!refParts) {
-                            console.warn(`⚠️ Formato não reconhecido: "${ref}"`);
-                            return `<span class="verse-ref-plain">${ref}</span>`;
-                        }
-                        
-                        const [_, livro, cap, vers, trad] = refParts;
-                        
-                        // 🆕 PARSE DO VERSÍCULO (pode ser range como "10-12")
-                        const versiculoNumero = parseInt(vers.split('-')[0]); // Pega primeiro número
-                        
-                        console.log(`   📖 Buscando: ${livro} ${cap}:${versiculoNumero} (${trad})`);
-                        
-                        // 🆕 USA MATCHING FLEXÍVEL
-                        const resultado = encontrarFonteFlexivel(livro, parseInt(cap), versiculoNumero, trad, fontes);
-                        
-                        if (resultado) {
-                            console.log(`   ✅ ENCONTRADO! Índice: ${resultado.indice}`);
-                            
-                            // 🆕 GUARDA APENAS O ÍNDICE (não o texto!)
-                            return `<span class="verse-ref" data-indice="${resultado.indice}">${ref}</span>`;
-                        } else {
-                            console.warn(`   ⚠️ NÃO ENCONTRADO`);
-                            return `<span class="verse-ref-plain">${ref}</span>`;
-                        }
-                    }
-                );
-                
-                console.log(`🎯 Total de substituições: ${countSubstituicoes}`);
-                
-               // Converte markdown para HTML
+                // Converte markdown para HTML
                 let htmlContent = marked.parse(respostaTextoFinal);
                 
                 // Limpa formatação problemática
                 htmlContent = limparFormatacaoProblematica(htmlContent);
                 
                 // 🆕 CRÍTICO: Processa citações DEPOIS da conversão Markdown → HTML
-                // Marked.parse() converte **(texto)** em <strong>(texto)</strong>
                 let countSubstituicoes = 0;
                 
                 htmlContent = htmlContent.replace(
@@ -966,7 +865,6 @@
                         countSubstituicoes++;
                         console.log(`🔍 [${countSubstituicoes}] Processando: "${ref}"`);
                         
-                        // Parse da referência: "Deuteronômio 10:12 - NVI"
                         const refParts = ref.match(/^(.+?)\s+(\d+):(\d+(?:-\d+)?)\s*-\s*(NVI|ACF|ARA|AA)$/);
                         
                         if (!refParts) {
@@ -975,19 +873,14 @@
                         }
                         
                         const [_, livro, cap, vers, trad] = refParts;
-                        
-                        // 🆕 PARSE DO VERSÍCULO (pode ser range como "10-12")
-                        const versiculoNumero = parseInt(vers.split('-')[0]); // Pega primeiro número
+                        const versiculoNumero = parseInt(vers.split('-')[0]);
                         
                         console.log(`   📖 Buscando: ${livro} ${cap}:${versiculoNumero} (${trad})`);
                         
-                        // 🆕 USA MATCHING FLEXÍVEL
                         const resultado = encontrarFonteFlexivel(livro, parseInt(cap), versiculoNumero, trad, fontesGlobal);
                         
                         if (resultado) {
                             console.log(`   ✅ ENCONTRADO! Índice: ${resultado.indice}`);
-                            
-                            // 🆕 GUARDA APENAS O ÍNDICE (não o texto!)
                             return `<span class="verse-ref" data-indice="${resultado.indice}">${ref}</span>`;
                         } else {
                             console.warn(`   ⚠️ NÃO ENCONTRADO`);
@@ -1000,7 +893,7 @@
                 
                 respostaTexto.innerHTML = htmlContent;
                 
-                // 🆕 ADICIONA EVENTO DE CLIQUE NAS REFERÊNCIAS (USA ÍNDICE!)
+                // ADICIONA EVENTO DE CLIQUE NAS REFERÊNCIAS
                 const verseRefs = respostaTexto.querySelectorAll('.verse-ref');
                 console.log(`🖱️ Total de .verse-ref encontrados: ${verseRefs.length}`);
                 
